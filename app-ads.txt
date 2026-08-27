@@ -1,0 +1,10 @@
+# ==============================================================================
+# app-ads.txt para XrayTec - Calculadora Radiológica (Plicet Studio)
+# ID de Publicador Oficial AdMob: pub-8507296424570065
+# ==============================================================================
+
+# Entrada Oficial de Google AdMob (DIRECT)
+google.com, pub-8507296424570065, DIRECT, f08c47fec0942fa0
+
+# Entrada Oficial de AppLovin MAX (RESELLER / Bidding)
+applovin.com, pub-8507296424570065, RESELLER, 9b9ef92955f24202
