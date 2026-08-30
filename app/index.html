@@ -68,8 +68,8 @@
         .val-badge { color: var(--accent-green); font-weight: bold; font-size: 13px; }
         input[type="range"] { width: 100%; accent-color: var(--accent-green); cursor: pointer; }
 
-        /* Contenedor de Banner Transparente y Auto-Colapsable */
-        .tma-banner-container { background: transparent; border: none; padding: 0; margin: 0; text-align: center; width: 100%; min-height: 0; }
+        /* Contenedor de Banner Transparente y Auto-Colapsable sin Cajas Negras */
+        .tma-banner-container { background: transparent !important; border: none !important; padding: 0 !important; margin: 6px 0 !important; text-align: center; width: 100%; min-height: 0 !important; box-shadow: none !important; }
         .tma-banner-container:empty { display: none; }
 
         /* Banner Promocional Teaser */
@@ -141,7 +141,7 @@
 
             <div id="pdf-unlocked-success" style="display:none; margin-top: 10px; padding: 10px; background: #065f46; border: 1px solid #39ff14; border-radius: 8px;">
                 <div style="font-size: 12px; font-weight: bold; color: #39ff14;">🎉 ¡PAGO CONFIRMADO! COMPENDIO PRO DESBLOQUEADO</div>
-                <a href="Compendio_Radiologico_XrayTec_PRO.pdf" target="_blank" download class="btn-primary" style="margin-top: 8px; background: #39ff14; color: #000;">
+                <a href="./Compendio_Radiologico_XrayTec_PRO.pdf" target="_blank" download class="btn-primary" style="margin-top: 8px; background: #39ff14; color: #000;">
                     📥 DESCARGAR COMPENDIO PDF OFICIAL
                 </a>
             </div>
@@ -620,40 +620,49 @@
             }
         }
 
-        // INTEGRACIÓN OFICIAL DE PAGO CON TELEGRAM STARS (25 ESTRELLAS = 25 XTR)
+        // INTEGRACIÓN OFICIAL Y ESTRICTA DE PAGO CON TELEGRAM STARS (25 ESTRELLAS = 25 XTR)
+        const RENDER_BACKEND_URL = 'https://xraytec.onrender.com/api/generar-factura';
+
         function comprarCompendioStars() {
             const btn = document.getElementById('btn-buy-pdf-stars');
+            const originalText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
             btn.innerText = "⏳ GENERANDO FACTURA TELEGRAM STARS...";
             btn.disabled = true;
 
-            fetch('http://localhost:8080/api/generar-factura')
-                .then(res => res.json())
+            fetch(RENDER_BACKEND_URL)
+                .then(res => {
+                    if (!res.ok) throw new Error("Error en servidor backend de facturación");
+                    return res.json();
+                })
                 .then(data => {
-                    if (data.invoiceLink && window.Telegram && window.Telegram.WebApp) {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+
+                    if (data.invoiceLink && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openInvoice) {
                         Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
-                            btn.innerText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
-                            btn.disabled = false;
                             if (status === 'paid') {
                                 document.getElementById('pdf-unlocked-success').style.display = 'block';
-                                window.open('Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+                                window.open('./Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+                            } else {
+                                alert("⚠️ Pago no completado. La transacción fue cancelada o no se acreditaron las 25 Estrellas.");
                             }
                         });
                     } else if (data.invoiceLink) {
                         window.open(data.invoiceLink, '_blank');
-                        btn.innerText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
-                        btn.disabled = false;
                     } else {
-                        throw new Error("No se obtuvo link de factura");
+                        alert("⚠️ No se pudo generar la factura de Telegram Stars. Por favor intenta nuevamente.");
                     }
                 })
                 .catch(err => {
-                    console.warn("Modo demostración directo activo.", err);
-                    btn.innerText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
+                    console.error("Error al conectar pasarela de pago:", err);
+                    btn.innerText = originalText;
                     btn.disabled = false;
-                    // Enlace directo de respaldo
-                    document.getElementById('pdf-unlocked-success').style.display = 'block';
-                    window.open('Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+                    alert("⚠️ No fue posible conectar con la pasarela de Telegram Stars. Asegúrate de tener conexión a internet y abrir desde Telegram.");
                 });
+        }
+
+        function abrirPdfSinError() {
+            window.open('./Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
         }
 
         renderProyecciones('todas');
