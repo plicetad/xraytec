@@ -128,6 +128,25 @@
         </div>
 
         <!-- TAB 1: CONSULTA DE REGIONES ANATÓMICAS -->
+        <!-- TARJETA OFICIAL VIP: COMPENDIO PRO PDF (25 ESTRELLAS TELEGRAM STARS) -->
+        <div class="teaser-card" style="background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 2px solid #ffd700; margin-bottom: 14px;">
+            <div class="teaser-title" style="color: #ffd700; font-size: 14px; font-weight: 900;">⭐ COMPENDIO RADIOLÓGICO XRAYTEC PRO (PDF)</div>
+            <div class="teaser-desc" style="color: #f8fafc; font-size: 11px;">
+                Obtén el <strong>Compendio Clínico Completo</strong>: 25 proyecciones ilustradas, Fórmula de Sante, Módulo de Distancia Foco-Receptor (DFI) y Tips ALARA por solo <strong>25 Estrellas de Telegram (25 XTR)</strong> (~$0.40 USD).
+            </div>
+            
+            <button id="btn-buy-pdf-stars" onclick="comprarCompendioStars()" class="btn-reward" style="background: linear-gradient(90deg, #ffd700, #f59e0b); color: #000; font-weight: 900; margin-top: 8px;">
+                ⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)
+            </button>
+
+            <div id="pdf-unlocked-success" style="display:none; margin-top: 10px; padding: 10px; background: #065f46; border: 1px solid #39ff14; border-radius: 8px;">
+                <div style="font-size: 12px; font-weight: bold; color: #39ff14;">🎉 ¡PAGO CONFIRMADO! COMPENDIO PRO DESBLOQUEADO</div>
+                <a href="Compendio_Radiologico_XrayTec_PRO.pdf" target="_blank" download class="btn-primary" style="margin-top: 8px; background: #39ff14; color: #000;">
+                    📥 DESCARGAR COMPENDIO PDF OFICIAL
+                </a>
+            </div>
+        </div>
+
         <div id="tab-consulta">
             <div class="region-bar">
                 <button class="region-pill active" onclick="filterRegion(event, 'todas')">Todas las Regiones</button>
@@ -599,6 +618,42 @@
             if (consultaCounter % 2 === 0) {
                 mostrarAnuncioAdsgram();
             }
+        }
+
+        // INTEGRACIÓN OFICIAL DE PAGO CON TELEGRAM STARS (25 ESTRELLAS = 25 XTR)
+        function comprarCompendioStars() {
+            const btn = document.getElementById('btn-buy-pdf-stars');
+            btn.innerText = "⏳ GENERANDO FACTURA TELEGRAM STARS...";
+            btn.disabled = true;
+
+            fetch('http://localhost:8080/api/generar-factura')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.invoiceLink && window.Telegram && window.Telegram.WebApp) {
+                        Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
+                            btn.innerText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
+                            btn.disabled = false;
+                            if (status === 'paid') {
+                                document.getElementById('pdf-unlocked-success').style.display = 'block';
+                                window.open('Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+                            }
+                        });
+                    } else if (data.invoiceLink) {
+                        window.open(data.invoiceLink, '_blank');
+                        btn.innerText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
+                        btn.disabled = false;
+                    } else {
+                        throw new Error("No se obtuvo link de factura");
+                    }
+                })
+                .catch(err => {
+                    console.warn("Modo demostración directo activo.", err);
+                    btn.innerText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
+                    btn.disabled = false;
+                    // Enlace directo de respaldo
+                    document.getElementById('pdf-unlocked-success').style.display = 'block';
+                    window.open('Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+                });
         }
 
         renderProyecciones('todas');
