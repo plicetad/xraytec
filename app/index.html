@@ -68,9 +68,10 @@
         .val-badge { color: var(--accent-green); font-weight: bold; font-size: 13px; }
         input[type="range"] { width: 100%; accent-color: var(--accent-green); cursor: pointer; }
 
-        /* Contenedor de Banner Transparente y Auto-Colapsable sin Cajas Negras */
-        .tma-banner-container { background: transparent !important; border: none !important; padding: 0 !important; margin: 6px 0 !important; text-align: center; width: 100%; min-height: 0 !important; box-shadow: none !important; }
-        .tma-banner-container:empty { display: none; }
+        /* Contenedor de Banner Transparente y Auto-Colapsable (0px de espacio si no hay anuncio) */
+        .tma-banner-container { background: transparent !important; border: none !important; padding: 0 !important; margin: 0 !important; text-align: center; width: 100%; min-height: 0 !important; box-shadow: none !important; overflow: hidden; }
+        .tma-banner-container:empty { display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }
+        ins.adsbygoogle:empty { display: none !important; height: 0 !important; }
 
         /* Banner Promocional Teaser */
         .teaser-card { background: linear-gradient(135deg, #064e3b, #0f172a); border: 1px solid var(--accent-green); padding: 14px; border-radius: 12px; margin-top: 12px; text-align: center; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
@@ -88,7 +89,7 @@
 
         /* Buttons & Sticky Footer */
         .btn-primary { width: 100%; background: linear-gradient(90deg, #047857, #10b981); color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; display: block; text-align: center; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
-        .btn-reward { width: 100%; background: linear-gradient(90deg, #eab308, #ca8a04); color: #000; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(234,179,8,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-reward { width: 100%; background: linear-gradient(90deg, #ffd700, #f59e0b); color: #000; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(255,215,0,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
 
         .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1120; border-top: 2px solid var(--accent-green); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 200; box-shadow: 0 -4px 16px rgba(0,0,0,0.7); }
         .sticky-btn { background: var(--accent-green); color: #000; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-weight: 900; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 0 10px rgba(57,255,20,0.4); }
@@ -132,7 +133,7 @@
         <div class="teaser-card" style="background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 2px solid #ffd700; margin-bottom: 14px;">
             <div class="teaser-title" style="color: #ffd700; font-size: 14px; font-weight: 900;">⭐ COMPENDIO RADIOLÓGICO XRAYTEC PRO (PDF)</div>
             <div class="teaser-desc" style="color: #f8fafc; font-size: 11px;">
-                Obtén el <strong>Compendio Clínico Completo</strong>: 25 proyecciones ilustradas, Fórmula de Sante, Módulo de Distancia Foco-Receptor (DFI) y Tips ALARA por solo <strong>25 Estrellas de Telegram (25 XTR)</strong> (~$0.40 USD).
+                Obtén el <strong>Compendio Clínico Completo</strong>: 25 proyecciones radiológicas con tablas de parámetros base, Fórmula de Sante, Módulo de Distancia Foco-Receptor (DFI) y Tips ALARA por solo <strong>25 Estrellas de Telegram (25 XTR)</strong> (~$0.40 USD).
             </div>
             
             <button id="btn-buy-pdf-stars" onclick="comprarCompendioStars()" class="btn-reward" style="background: linear-gradient(90deg, #ffd700, #f59e0b); color: #000; font-weight: 900; margin-top: 8px;">
@@ -205,13 +206,24 @@
             </div>
         </div>
 
-        <!-- TAB 3: TRIVIA INTERACTIVA CON REVELACIÓN MEDIANTE ANUNCIO RECOMPENSA (ADSGRAM 45202) -->
+        <!-- TAB 3: TRIVIA INTERACTIVA EN 3 CATEGORÍAS ESPECIALIZADAS CON RECOMPENSA (ADSGRAM 45202) -->
         <div id="tab-trivia" style="display: none;">
             <div class="card">
-                <div class="card-title">🧠 Desafío de Casos Clínicos Radiológicos</div>
+                <div class="card-title">🧠 Desafío de Casos Clínicos Multidisciplinarios</div>
                 
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">
+                    Selecciona una categoría clínica para poner a prueba tus conocimientos diagnósticos:
+                </div>
+
+                <!-- SELECCIÓN DE 3 CATEGORÍAS ESPECIALIZADAS -->
+                <div style="display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px;">
+                    <button class="region-pill active" id="btn-cat-rx" onclick="switchTriviaCategory('rx')">☢️ Rayos X</button>
+                    <button class="region-pill" id="btn-cat-us" onclick="switchTriviaCategory('us')">🔊 Ultrasonido</button>
+                    <button class="region-pill" id="btn-cat-tc" onclick="switchTriviaCategory('tc')">🌀 Tomografía (TC)</button>
+                </div>
+
                 <div id="quiz-question-box">
-                    <div style="font-size: 11px; color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">CASO CLÍNICO RELEVANTE #1</div>
+                    <div id="quiz-cat-tag" style="font-size: 11px; color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">CATEGORÍA: RAYOS X CONVENCIONAL & DIGITAL</div>
                     <div id="quiz-q" style="font-size: 13px; font-weight: bold; margin-bottom: 12px; line-height: 1.4;">
                         En un paciente con fractura de fémur inmovilizado con un YESO HÚMEDO (fresco), ¿cuál es el ajuste de Kilovoltaje (kVp) o mAs requerido para evitar la subexposición?
                     </div>
@@ -228,7 +240,7 @@
                 <div id="reward-unlock-box" class="reward-unlock-box">
                     <div style="font-size: 14px; font-weight: 900; color: var(--accent-yellow); margin-bottom: 6px;">🔒 Respuesta Registrada</div>
                     <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
-                        Mira un breve video publicitario de 15 segundos para comprobar si acertaste y desbloquear la <strong>Explicación Física Académica y Cita de Bontrager</strong>.
+                        Mira un breve video publicitario de 15 segundos para comprobar si acertaste y desbloquear la <strong>Explicación Física Académica y Cita Bibliográfica Oficial</strong>.
                     </div>
                     <button class="btn-reward" onclick="desbloquearRespuestaConAnuncio()">
                         <span>🎬 REVELAR RESPUESTA Y EXPLICACIÓN CON VIDEO</span>
@@ -239,7 +251,7 @@
                 <div id="quiz-result-expl" style="display:none; margin-top: 14px; padding: 12px; background: #040711; border-left: 4px solid var(--accent-green); border-radius: 8px;">
                     <div style="font-size: 13px; font-weight: 900; color: var(--accent-green); margin-bottom: 6px;">✅ ¡EXPLICACIÓN ACADÉMICA DESBLOQUEADA!</div>
                     <div id="quiz-result-text" style="font-size: 11px; color: #fff; line-height: 1.5;"></div>
-                    <div style="font-size: 9px; color: var(--accent-cyan); margin-top: 8px;">Fuente: Bontrager's Textbook of Radiographic Positioning 7ma Ed. Cap. 1 / Bushong Cap. 16</div>
+                    <div id="quiz-result-source" style="font-size: 9px; color: var(--accent-cyan); margin-top: 8px;">Fuente: Bontrager's Textbook of Radiographic Positioning 7ma Ed.</div>
                 </div>
 
             </div>
@@ -321,6 +333,122 @@
             }
         }
 
+        // BANCO DE TRIVIAS MULTIDISCIPLINARIAS EN 3 CATEGORÍAS CLÍNICAS
+        const bancoTriviasMiniApp = {
+            rx: [
+                {
+                    cat_name: "CATEGORÍA: RAYOS X CONVENCIONAL & DIGITAL",
+                    q: "En un paciente con fractura de fémur inmovilizado con un YESO HÚMEDO (fresco), ¿cuál es el ajuste de Kilovoltaje (kVp) o mAs requerido para evitar la subexposición?",
+                    opts: [
+                        "A. Incrementar de +10 a +12 kVp (o duplicar +100% mAs) debido a la densidad de la humedad.",
+                        "B. Reducir el kVp un -15% para evitar sobreexponer el hueso.",
+                        "C. Mantener la técnica estándar sin cambios.",
+                        "D. Disminuir el mAs a la mitad sin modificar el kVp."
+                    ],
+                    correct: 0,
+                    expl: "El agua presente en el yeso húmedo absorbe mayor proporción de fotones primarios por efecto fotoeléctrico. Por tanto, se requiere incrementar de +10 a +12 kVp (o duplicar el mAs +100%). Una vez seco, el incremento se reduce a +5 o +7 kVp.",
+                    source: "Fuente: Bontrager's Textbook of Radiographic Positioning 7ma Ed. Cap. 1 / Bushong Cap. 16"
+                },
+                {
+                    cat_name: "CATEGORÍA: RAYOS X CONVENCIONAL & DIGITAL",
+                    q: "En una radiografía de columna cervical lateral, ¿por qué se utiliza una Distancia Foco-Receptor (DFI) ampliada a 180 cm en lugar de los 100 cm estándar?",
+                    opts: [
+                        "A. Para compensar la distancia objeto-receptor de los hombros y reducir la magnificación.",
+                        "B. Para aumentar el penacho de dispersión secundario.",
+                        "C. Para reducir la penetrabilidad en tejidos blandos.",
+                        "D. Para duplicar el mAs sin modificar el tiempo de disparo."
+                    ],
+                    correct: 0,
+                    expl: "La distancia desde la columna cervical hasta la placa es mayor debido al ancho de los hombros. Al aumentar la DFI a 180 cm se reduce la magnificación de los cuerpos vertebrales y se incrementa la nitidez del contorno óseo.",
+                    source: "Fuente: Bontrager Cap. 8 / Merrill Atlas of Radiographic Positioning"
+                }
+            ],
+            us: [
+                {
+                    cat_name: "CATEGORÍA: ULTRASONIDO / ECOGRAFÍA CLÍNICA",
+                    q: "En ecografía abdominal, ¿qué artefacto acústico se produce distal a una estructura anecoica líquida como la vesícula biliar o un quiste simple?",
+                    opts: [
+                        "A. Refuerzo Acústico Posterior (Aumento de eco posterior).",
+                        "B. Sombra Acústica Posterior con cono de sombra.",
+                        "C. Artefacto en Espejo por reflexión diafragmática.",
+                        "D. Artefacto de Anillo o Ring-down por gas."
+                    ],
+                    correct: 0,
+                    expl: "El sonido atraviesa los fluidos sin atenuación apreciable. Al llegar a los tejidos profundos detrás de la estructura líquida, los ecos retornan con mayor amplitud, generando una zona brillante denominada Refuerzo Acústico Posterior.",
+                    source: "Fuente: Rumack's Diagnostic Ultrasound 5ta Ed. Cap. 1 / Física de Ecografía Médica"
+                },
+                {
+                    cat_name: "CATEGORÍA: ULTRASONIDO / ECOGRAFÍA CLÍNICA",
+                    q: "Al evaluar el flujo en arterias renales con Doppler Color, ¿qué cambio ocurre al aumentar la Frecuencia de Repetición de Pulsos (PRF)?",
+                    opts: [
+                        "A. Elimina el artefacto de aliasing (solapamiento) en altas velocidades.",
+                        "B. Aumenta la sensibilidad para flujos extremadamente lentos.",
+                        "C. Duplica la penetración del haz ultrasónico.",
+                        "D. Disminuye la resolución axial del transductor."
+                    ],
+                    correct: 0,
+                    expl: "Aumentar la PRF eleva la escala de velocidades Doppler detectables sin ambigüedad (Límite de Nyquist = PRF/2), eliminando el aliasing o cambio inverso de color en flujos de alta velocidad.",
+                    source: "Fuente: Doppler Ultrasound in Diagnosis / Rumack Cap. 2"
+                }
+            ],
+            tc: [
+                {
+                    cat_name: "CATEGORÍA: TOMOGRAFÍA COMPUTARIZADA (TC / TAC)",
+                    q: "En Tomografía Computarizada multicorte, ¿cuál es el valor aproximado en Unidades Hounsfield (HU) de la sangre fresca extravasada en un hematoma agudo?",
+                    opts: [
+                        "A. Entre +50 HU y +80 HU.",
+                        "B. Entre -100 HU y -50 HU.",
+                        "C. Exactamente 0 HU (igual al agua pura).",
+                        "D. Mayor a +1000 HU (igual al hueso cortical)."
+                    ],
+                    correct: 0,
+                    expl: "La hemoglobina concentrada en la sangre recién coagulada eleva la atenuación de los rayos X, mostrando hiperdensidad en ventana de encéfalo con valores entre +50 HU y +80 HU, diferenciándolo del LCR (0 a +15 HU) y del edema (-20 HU a +20 HU).",
+                    source: "Fuente: Hounsfield Scale Official Reference / Computed Tomography for Technologists (Seeram)"
+                },
+                {
+                    cat_name: "CATEGORÍA: TOMOGRAFÍA COMPUTARIZADA (TC / TAC)",
+                    q: "¿Qué efecto tiene sobre la dosis y el ruido de imagen el incremento del 'Pitch' en un escáner helicoidal de TC?",
+                    opts: [
+                        "A. Reduce la dosis al paciente y aumenta ligeramente el ruido de imagen.",
+                        "B. Duplica la dosis de radiación al prolongar la exposición.",
+                        "C. Aumenta la resolución espacial a lo largo del eje Z.",
+                        "D. No produce ningún cambio en el tiempo de adquisición."
+                    ],
+                    correct: 0,
+                    expl: "Un Pitch mayor a 1 (desplazamiento de camilla mayor al grosor de colimación por rotación) cubre la anatomía más rápido, disminuyendo la dosis total administrada al paciente a costa de un leve incremento en el ruido estático de reconstrucción.",
+                    source: "Fuente: AAPM Protocols for CT Radiation Doses / Bushong Cap. 27"
+                }
+            ]
+        };
+
+        let currentCat = 'rx';
+        let currentQuizIndex = 0;
+
+        function switchTriviaCategory(catKey) {
+            currentCat = catKey;
+            currentQuizIndex = 0;
+            document.querySelectorAll('#tab-trivia .region-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-cat-' + catKey).classList.add('active');
+
+            const item = bancoTriviasMiniApp[catKey][currentQuizIndex];
+            document.getElementById('quiz-cat-tag').innerText = item.cat_name;
+            document.getElementById('quiz-q').innerText = item.q;
+
+            const optsBox = document.getElementById('quiz-opts');
+            optsBox.innerHTML = '';
+            item.opts.forEach((opText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.innerText = opText;
+                btn.onclick = function() { selectQuizOpt(btn, idx); };
+                optsBox.appendChild(btn);
+            });
+
+            document.getElementById('reward-unlock-box').style.display = 'none';
+            document.getElementById('quiz-result-expl').style.display = 'none';
+            selectedQuizOption = null;
+        }
+
         function selectQuizOpt(btn, optionIdx) {
             document.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
@@ -328,14 +456,11 @@
             document.getElementById('reward-unlock-box').style.display = 'block';
         }
 
-        // VER ANUNCIO REWARD ADSGRAM CON EL BLOQUE EXACTO 45202
         function desbloquearRespuestaConAnuncio() {
             if (AdControllerReward) {
                 AdControllerReward.show().then((result) => {
-                    console.log("Recompensa Adsgram 45202 completada exitosamente.");
                     revelarExplicaciónTrivia();
                 }).catch((error) => {
-                    console.warn("Anuncio Reward 45202 interrumpido, mostrando respuesta de respaldo.");
                     revelarExplicaciónTrivia();
                 });
             } else if (window.Adsgram) {
@@ -353,20 +478,24 @@
             document.getElementById('reward-unlock-box').style.display = 'none';
             const resultBox = document.getElementById('quiz-result-expl');
             const resultText = document.getElementById('quiz-result-text');
+            const resultSource = document.getElementById('quiz-result-source');
             const opts = document.querySelectorAll('.quiz-opt');
+
+            const item = bancoTriviasMiniApp[currentCat][currentQuizIndex];
 
             opts.forEach((b, idx) => {
                 b.disabled = true;
-                if (idx === 0) b.classList.add('correct');
-                else if (idx === selectedQuizOption && selectedQuizOption !== 0) b.classList.add('wrong');
+                if (idx === item.correct) b.classList.add('correct');
+                else if (idx === selectedQuizOption && selectedQuizOption !== item.correct) b.classList.add('wrong');
             });
 
-            if (selectedQuizOption === 0) {
-                resultText.innerHTML = "<strong>¡CORRECTO!</strong><br>El agua presente en el yeso húmedo absorbe una mayor proporción de fotones primarios por efecto fotoeléctrico. Por tanto, se requiere incrementar de +10 a +12 kVp (o duplicar el mAs +100%) para lograr la penetración adecuada. Una vez seco, el incremento se reduce a +5 o +7 kVp.";
+            if (selectedQuizOption === item.correct) {
+                resultText.innerHTML = "<strong>¡CORRECTO!</strong><br>" + item.expl;
             } else {
-                resultText.innerHTML = "<strong>RESPUESTA INCORRECTA (La correcta era la A).</strong><br>El agua en un yeso recién colocado absorbe la radiación por efecto fotoeléctrico. Para atravesar la densidad de la humedad se debe aumentar de +10 a +12 kVp (o duplicar el mAs).";
+                resultText.innerHTML = "<strong>RESPUESTA INCORRECTA (La correcta era la " + item.opts[item.correct].substring(0, 1) + ").</strong><br>" + item.expl;
             }
 
+            if (resultSource) resultSource.innerText = item.source;
             resultBox.style.display = 'block';
         }
 
