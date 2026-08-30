@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XrayTec - Guía y Calculadora Radiológica Médica</title>
+    <!-- SDK oficial de Telegram Mini Apps -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- SDK oficial de Adsgram -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8507296424570065" crossorigin="anonymous"></script>
 
     <style>
@@ -24,7 +28,6 @@
 
         header { background: #0b1120; padding: 12px 16px; border-bottom: 2px solid var(--accent-green); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
         .header-brand { display: flex; align-items: center; gap: 10px; }
-        .header-logo { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
         .header-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
         .header-subtitle { font-size: 10px; color: var(--accent-cyan); font-weight: 600; }
         .badge-pro { font-size: 10px; background: rgba(57, 255, 20, 0.12); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 3px 8px; border-radius: 12px; font-weight: 800; }
@@ -59,16 +62,17 @@
         .val-badge { color: var(--accent-green); font-weight: bold; font-size: 13px; }
         input[type="range"] { width: 100%; accent-color: var(--accent-green); cursor: pointer; }
 
-        .teaser-card { background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 1px dashed var(--accent-yellow); padding: 14px; border-radius: 12px; margin-top: 12px; text-align: center; }
-        .teaser-title { font-size: 13px; font-weight: 800; color: var(--accent-yellow); margin-bottom: 6px; }
-        .teaser-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
+        .tma-banner-container { background: #040711; border: 1px solid var(--card-border); border-radius: 10px; padding: 8px; margin: 10px 0; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+
+        .teaser-card { background: linear-gradient(135deg, #064e3b, #0f172a); border: 1px solid var(--accent-green); padding: 14px; border-radius: 12px; margin-top: 12px; text-align: center; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
+        .teaser-title { font-size: 13px; font-weight: 800; color: var(--accent-green); margin-bottom: 6px; }
+        .teaser-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; }
 
         .btn-primary { width: 100%; background: linear-gradient(90deg, #047857, #10b981); color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; display: block; text-align: center; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .btn-stars { width: 100%; background: linear-gradient(90deg, #eab308, #ca8a04); color: #000; border: none; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(234,179,8,0.3); }
 
         .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1120; border-top: 2px solid var(--accent-green); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 200; box-shadow: 0 -4px 16px rgba(0,0,0,0.7); }
         .sticky-btn { background: var(--accent-green); color: #000; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-weight: 900; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 0 10px rgba(57,255,20,0.4); }
-
-        .ad-container { background: transparent; border: none; padding: 0; margin: 6px 0; text-align: center; overflow: hidden; }
     </style>
 </head>
 <body>
@@ -89,11 +93,11 @@
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab(event, 'consulta')">🔍 Consulta Regiones</button>
             <button class="tab-btn" onclick="switchTab(event, 'calc')">🧮 Calculadora Directa</button>
+            <button class="tab-btn" onclick="switchTab(event, 'stars')">⭐ Estrellas (XTR)</button>
             <button class="tab-btn" onclick="switchTab(event, 'ayuda')">❓ Ayuda & ALARA</button>
-            <button class="tab-btn" onclick="switchTab(event, 'quiz')">🧠 Trivia</button>
         </div>
 
-        <div class="ad-container">
+        <div id="telegram-ad-banner-top" class="tma-banner-container">
             <ins class="adsbygoogle"
                  style="display:block; width:100%;"
                  data-ad-client="ca-pub-8507296424570065"
@@ -119,9 +123,9 @@
             <div id="proyecciones-list"></div>
 
             <div class="teaser-card">
-                <div class="teaser-title">🔒 35+ Proyecciones Clínicas Avanzadas Disponibles</div>
-                <div class="teaser-desc">Desbloquea técnicas de Mielografía, Urografía Excretora, Serie Digestiva, Angiografía y visores de Rayo Central en HD instalando la aplicación nativa para Android.</div>
-                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Completa en Google Play</a>
+                <div class="teaser-title">📱 Máxima Versatilidad Radiológica en tu Bolsillo</div>
+                <div class="teaser-desc">Disfruta de la experiencia completa de XrayTec en el hospital: cálculo de exposición instantáneo, optimización de dosis ALARA, interfaz de consola oscura y 100% de uso sin conexión a internet.</div>
+                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Oficial en Google Play</a>
             </div>
         </div>
 
@@ -137,7 +141,7 @@
                     <input type="range" id="gen-thickness-slider" min="1" max="60" value="19" oninput="updateGenCalc()">
                 </div>
 
-                <div class="control-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="control-group" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
                     <span style="font-size: 12px;">Optimización ALARA (15% Rule):</span>
                     <input type="checkbox" id="gen-alara-toggle" checked onchange="updateGenCalc()" style="width: 18px; height: 18px; accent-color: var(--accent-green);">
                 </div>
@@ -156,7 +160,20 @@
                     <div id="gen-alara-badge" style="margin-top: 8px; font-size: 10px; color: var(--accent-yellow);">⚡ Reducción de dosis en piel de 50% activa</div>
                 </div>
 
-                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Completa en Google Play</a>
+                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary" style="margin-top: 12px;">📲 Descargar App Completa en Google Play</a>
+            </div>
+        </div>
+
+        <div id="tab-stars" style="display: none;">
+            <div class="card" style="border-left: 4px solid var(--accent-yellow);">
+                <div class="card-title" style="color: var(--accent-yellow);">⭐ Obtener Compendio Radiológico PRO</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;">
+                    Desbloquea la <strong>Guía Clínica Completa en PDF de Posicionamiento y Factores Radiológicos Verificados</strong> abonando directamente con <strong>Estrellas de Telegram (XTR)</strong>.
+                </p>
+                <div style="background: #040711; padding: 10px; border-radius: 8px; font-size: 11px; color: #fff;">
+                    📑 Incluye 25+ proyecciones clínicas ilustradas con angulación de Rayo Central, líneas de referencia y citas de Bontrager/Merrill.
+                </div>
+                <button class="btn-stars" onclick="procesarPagoConEstrellas()">⭐ Pagar 50 Estrellas con Telegram Stars</button>
             </div>
         </div>
 
@@ -186,20 +203,7 @@
             </div>
         </div>
 
-        <div id="tab-quiz" style="display: none;">
-            <div class="card">
-                <div class="card-title">🧠 Desafío de Trivia Radiológica</div>
-                <div id="quiz-q" style="font-size: 13px; font-weight: bold; margin-bottom: 10px;">¿Qué cambio ocurre al aplicar la Regla del 15% en el Kilovoltaje (kVp)?</div>
-                <div id="quiz-opts">
-                    <button class="quiz-opt" onclick="checkQuiz(this, true)">A. Incrementar el kVp un 15% permite reducir el mAs a la mitad, disminuyendo la dosis en piel hasta 50%.</button>
-                    <button class="quiz-opt" onclick="checkQuiz(this, false)">B. Incrementar el kVp requiere duplicar el mAs para mantener la nitidez.</button>
-                    <button class="quiz-opt" onclick="checkQuiz(this, false)">C. El mAs siempre permanece idéntico.</button>
-                </div>
-                <div id="quiz-expl" style="display:none; font-size: 11px; margin-top: 8px; padding: 8px; background: rgba(57,255,20,0.1); border-left: 3px solid var(--accent-green); border-radius: 4px;"></div>
-            </div>
-        </div>
-
-        <div class="ad-container">
+        <div id="telegram-ad-banner-bottom" class="tma-banner-container">
             <ins class="adsbygoogle"
                  style="display:block; width:100%;"
                  data-ad-client="ca-pub-8507296424570065"
@@ -220,6 +224,59 @@
     </div>
 
     <script>
+        let consultaCounter = 0;
+
+        // 1.2 CONTROLADOR DE ADSGRAM (BLOQUE int-45201)
+        let AdController = null;
+        if (window.Adsgram) {
+            AdController = window.Adsgram.init({ blockId: "int-45201" });
+        }
+
+        function mostrarAnuncioAdsgram() {
+            if (AdController) {
+                AdController.show().then((result) => {
+                    console.log("Visualización completada exitosamente en Adsgram int-45201.");
+                }).catch((error) => {
+                    console.warn("El usuario cerró el anuncio o falló la carga.", error);
+                });
+            } else if (window.Adsgram) {
+                window.Adsgram.init({ blockId: "int-45201" }).show().catch(e => console.warn(e));
+            }
+        }
+
+        // 1.3 CONTROLADOR DE TELEGRAM STARS (PAGOS NATIVOS XTR)
+        async function procesarPagoConEstrellas() {
+            try {
+                const endpoint = "/api/generar-factura"; 
+                const respuesta = await fetch(endpoint);
+                const datos = await respuesta.json();
+
+                if (datos && datos.invoiceLink) {
+                    Telegram.WebApp.openInvoice(datos.invoiceLink, function(status) {
+                        if (status === 'paid') {
+                            console.log("Transacción exitosa confirmada por Telegram.");
+                            alert("¡Pago exitoso! Tu Compendio Radiológico PRO en PDF se ha desbloqueado.");
+                        } else if (status === 'cancelled') {
+                            console.log("Transacción cancelada por el usuario.");
+                        } else {
+                            console.error("Fallo en la transacción.");
+                        }
+                    });
+                } else {
+                    Telegram.WebApp.openInvoice("https://t.me/xratecbot?start=stars_compendio", (status) => {
+                        if (status === 'paid') alert("¡Pago con Estrellas exitoso!");
+                    });
+                }
+            } catch (error) {
+                console.error("Fallo de comunicación con el servidor:", error);
+                if (window.Telegram && window.Telegram.WebApp) {
+                    Telegram.WebApp.openInvoice("https://t.me/xratecbot?start=stars_compendio", (status) => {
+                        if (status === 'paid') alert("¡Pago exitoso!");
+                    });
+                }
+            }
+        }
+
         const baseProyecciones = [
             {
                 region: "craneo",
@@ -424,6 +481,11 @@
 
             document.getElementById(`kvp-val-${idx}`).innerText = calcKvp;
             document.getElementById(`mas-val-${idx}`).innerText = calcMas.toFixed(2);
+
+            consultaCounter++;
+            if (consultaCounter % 2 === 0) {
+                mostrarAnuncioAdsgram();
+            }
         }
 
         function filterRegion(evt, regionName) {
@@ -458,19 +520,11 @@
 
             document.getElementById('gen-res-kvp').innerText = baseKvp;
             document.getElementById('gen-res-mas').innerText = baseMas.toFixed(2);
-        }
 
-        function checkQuiz(btn, isCorrect) {
-            document.querySelectorAll('.quiz-opt').forEach(b => b.disabled = true);
-            const expl = document.getElementById('quiz-expl');
-            if (isCorrect) {
-                btn.classList.add('correct');
-                expl.innerText = "¡Correcto! (Fuente: Bushong Ciencia Radiológica Cap. 16 / Bontrager). Al subir el kVp 15% y cortar el mAs a la mitad, se reduce la dosis absorbida en piel hasta en un 50%.";
-            } else {
-                btn.classList.add('wrong');
-                expl.innerText = "Incorrecto. La respuesta correcta es la A (Principio de Optimización ALARA).";
+            consultaCounter++;
+            if (consultaCounter % 2 === 0) {
+                mostrarAnuncioAdsgram();
             }
-            expl.style.display = 'block';
         }
 
         renderProyecciones('todas');
