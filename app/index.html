@@ -3,91 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XrayTec - Telegram Mini App (Monetizada Día 1)</title>
-    <!-- Telegram WebApp SDK -->
+    <title>XrayTec - Guía y Calculadora Radiológica Médica</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
-    <!-- Google AdSense / AdManager Script para Monetización Día 1 (Publisher: ca-pub-8507296424570065) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8507296424570065" crossorigin="anonymous"></script>
 
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: #141b2d;
+            --bg-color: #060911;
+            --card-bg: #0f172a;
+            --card-border: #1e293b;
             --accent-green: #39ff14;
             --accent-cyan: #00f2fe;
             --accent-yellow: #ffd700;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border-color: #1e293b;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 90px; }
 
-        header { background: #0f172a; padding: 16px; text-align: center; border-bottom: 2px solid var(--accent-green); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; }
-        header h1 { font-size: 18px; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
+        header { background: #0b1120; padding: 12px 16px; border-bottom: 2px solid var(--accent-green); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
+        .header-brand { display: flex; align-items: center; gap: 10px; }
+        .header-logo { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+        .header-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
+        .header-subtitle { font-size: 10px; color: var(--accent-cyan); font-weight: 600; }
+        .badge-pro { font-size: 10px; background: rgba(57, 255, 20, 0.12); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 3px 8px; border-radius: 12px; font-weight: 800; }
 
-        .container { padding: 16px; max-width: 600px; margin: 0 auto; }
+        .container { padding: 14px; max-width: 600px; margin: 0 auto; }
 
-        /* Tabs */
-        .tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-        .tab-btn { background: var(--card-bg); color: var(--text-muted); border: 1px solid var(--border-color); padding: 10px 16px; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; }
-        .tab-btn.active { background: var(--accent-green); color: #000; border-color: var(--accent-green); }
+        .tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
+        .tab-btn { background: #0f172a; color: var(--text-muted); border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; transition: all 0.2s; }
+        .tab-btn.active { background: linear-gradient(135deg, #047857, #10b981); color: #fff; border-color: var(--accent-green); box-shadow: 0 0 12px rgba(57,255,20,0.3); }
 
-        /* Cards */
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-        .card-title { font-size: 15px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+        .region-bar { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; scrollbar-width: none; }
+        .region-bar::-webkit-scrollbar { display: none; }
+        .region-pill { background: #1e293b; color: var(--text-muted); border: 1px solid var(--card-border); padding: 7px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .region-pill.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); font-weight: 900; }
 
-        /* Controls */
-        .control-group { margin-bottom: 14px; }
-        .control-label { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .val-badge { color: var(--accent-green); font-weight: bold; font-size: 14px; }
-        input[type="range"] { width: 100%; accent-color: var(--accent-green); }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        .card-title { font-size: 15px; font-weight: 800; color: var(--accent-cyan); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
 
-        /* Results */
-        .result-box { background: #070a11; border: 1px solid var(--accent-green); border-radius: 10px; padding: 16px; text-align: center; margin-top: 12px; }
-        .result-grid { display: flex; justify-content: space-around; margin-top: 8px; }
-        .result-val { font-size: 28px; font-weight: 900; color: var(--accent-green); }
-        .result-lbl { font-size: 11px; color: var(--text-muted); }
+        .struct-card { border-left: 4px solid var(--accent-green); background: #0b1120; padding: 14px; border-radius: 10px; margin-bottom: 12px; border-top: 1px solid var(--card-border); border-right: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+        .struct-header { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .struct-tag { font-size: 10px; background: #1e293b; color: var(--accent-cyan); padding: 2px 8px; border-radius: 12px; font-weight: 700; }
+        
+        .factores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; background: #040711; padding: 10px; border-radius: 8px; border: 1px solid #1e293b; }
+        .factor-item { font-size: 11px; color: var(--text-muted); }
+        .factor-val { color: var(--accent-green); font-weight: 900; font-size: 14px; }
 
-        /* Buttons & Sticky Banner */
-        .btn-primary { width: 100%; background: linear-gradient(90deg, #047857, #10b981); color: #fff; border: none; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; text-decoration: none; display: block; text-align: center; margin-top: 12px; }
+        .info-row { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+        .info-row strong { color: var(--text-main); }
 
-        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-top: 1px solid var(--accent-green); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 200; box-shadow: 0 -4px 12px rgba(0,0,0,0.5); }
-        .sticky-btn { background: var(--accent-green); color: #000; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 900; font-size: 12px; }
+        .calc-adjust-box { background: #131c31; padding: 12px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--accent-cyan); }
+        .control-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .val-badge { color: var(--accent-green); font-weight: bold; font-size: 13px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-green); cursor: pointer; }
 
-        /* Ad Units */
-        .ad-container { background: #000; border: 1px dashed var(--accent-cyan); border-radius: 8px; padding: 8px; text-align: center; margin: 12px 0; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        .teaser-card { background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 1px dashed var(--accent-yellow); padding: 14px; border-radius: 12px; margin-top: 12px; text-align: center; }
+        .teaser-title { font-size: 13px; font-weight: 800; color: var(--accent-yellow); margin-bottom: 6px; }
+        .teaser-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; }
 
-        /* Technique Card List */
-        .tech-item { border-left: 3px solid var(--accent-cyan); padding-left: 12px; margin-bottom: 12px; background: rgba(255,255,255,0.02); padding: 10px; border-radius: 0 8px 8px 0; }
-        .tech-title { font-size: 14px; font-weight: bold; color: var(--text-main); }
-        .tech-detail { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .btn-primary { width: 100%; background: linear-gradient(90deg, #047857, #10b981); color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; display: block; text-align: center; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
 
-        /* Quiz */
-        .quiz-opt { background: #1e293b; border: 1px solid var(--border-color); color: var(--text-main); padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 13px; text-align: left; width: 100%; }
-        .quiz-opt.correct { background: #065f46; border-color: var(--accent-green); color: #fff; }
-        .quiz-opt.wrong { background: #881337; border-color: #f43f5e; color: #fff; }
+        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1120; border-top: 2px solid var(--accent-green); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 200; box-shadow: 0 -4px 16px rgba(0,0,0,0.7); }
+        .sticky-btn { background: var(--accent-green); color: #000; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-weight: 900; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 0 10px rgba(57,255,20,0.4); }
+
+        .ad-container { background: transparent; border: none; padding: 0; margin: 6px 0; text-align: center; overflow: hidden; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>☢️ XrayTec Web</h1>
-        <span style="font-size: 11px; background: #0284c7; color: #fff; padding: 3px 8px; border-radius: 12px;">Monetizada Día 1</span>
+        <div class="header-brand">
+            <div style="width:32px; height:32px; border-radius:50%; background:var(--accent-green); display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:18px;">☢️</div>
+            <div>
+                <div class="header-title">XrayTec</div>
+                <div class="header-subtitle">Guía & Calculadora Médica</div>
+            </div>
+        </div>
+        <span class="badge-pro">ALARA Verified</span>
     </header>
 
     <div class="container">
         
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab(event, 'calc')">🧮 Calculadora</button>
-            <button class="tab-btn" onclick="switchTab(event, 'tech')">📚 Técnicas</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'consulta')">🔍 Consulta Regiones</button>
+            <button class="tab-btn" onclick="switchTab(event, 'calc')">🧮 Calculadora Directa</button>
+            <button class="tab-btn" onclick="switchTab(event, 'ayuda')">❓ Ayuda & ALARA</button>
             <button class="tab-btn" onclick="switchTab(event, 'quiz')">🧠 Trivia</button>
-            <button class="tab-btn" onclick="switchTab(event, 'faq')">❓ FAQ</button>
         </div>
 
-        <!-- BLOQUE PUBLICITARIO SUPERIOR ADSENSE DÍA 1 -->
         <div class="ad-container">
             <ins class="adsbygoogle"
                  style="display:block; width:100%;"
@@ -98,97 +103,102 @@
             <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
         </div>
 
-        <!-- TAB 1: CALCULADORA -->
-        <div id="tab-calc">
+        <div id="tab-consulta">
+            <div class="region-bar">
+                <button class="region-pill active" onclick="filterRegion(event, 'todas')">Todas las Regiones</button>
+                <button class="region-pill" onclick="filterRegion(event, 'craneo')">💀 Cráneo</button>
+                <button class="region-pill" onclick="filterRegion(event, 'cuello')">🗣️ Cuello</button>
+                <button class="region-pill" onclick="filterRegion(event, 'cervical')">🦴 C. Cervical</button>
+                <button class="region-pill" onclick="filterRegion(event, 'dorsal')">🦴 C. Dorsal</button>
+                <button class="region-pill" onclick="filterRegion(event, 'lumbar')">🦴 C. Lumbar</button>
+                <button class="region-pill" onclick="filterRegion(event, 'torax')">🫁 Tórax</button>
+                <button class="region-pill" onclick="filterRegion(event, 'abdomen')">🫃 Abdomen</button>
+                <button class="region-pill" onclick="filterRegion(event, 'miembros')">🦴 Miembros</button>
+            </div>
+
+            <div id="proyecciones-list"></div>
+
+            <div class="teaser-card">
+                <div class="teaser-title">🔒 35+ Proyecciones Clínicas Avanzadas Disponibles</div>
+                <div class="teaser-desc">Desbloquea técnicas de Mielografía, Urografía Excretora, Serie Digestiva, Angiografía y visores de Rayo Central en HD instalando la aplicación nativa para Android.</div>
+                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Completa en Google Play</a>
+            </div>
+        </div>
+
+        <div id="tab-calc" style="display: none;">
             <div class="card">
-                <div class="card-title">🧮 Calculadora Radiológica Directa</div>
+                <div class="card-title">🧮 Calculadora de Exposición por Espesor</div>
                 
                 <div class="control-group">
                     <div class="control-label">
-                        <span>Espesor del Paciente (cm):</span>
-                        <span id="thickness-val" class="val-badge">19 cm</span>
+                        <span>Espesor Anatómico (cm):</span>
+                        <span id="gen-thickness-val" class="val-badge">19 cm</span>
                     </div>
-                    <input type="range" id="thickness-slider" min="1" max="60" value="19" oninput="updateCalc()">
+                    <input type="range" id="gen-thickness-slider" min="1" max="60" value="19" oninput="updateGenCalc()">
                 </div>
 
                 <div class="control-group" style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-size: 13px;">Optimización ALARA (15% Rule):</span>
-                    <input type="checkbox" id="alara-toggle" checked onchange="updateCalc()" style="width: 20px; height: 20px; accent-color: var(--accent-green);">
+                    <span style="font-size: 12px;">Optimización ALARA (15% Rule):</span>
+                    <input type="checkbox" id="gen-alara-toggle" checked onchange="updateGenCalc()" style="width: 18px; height: 18px; accent-color: var(--accent-green);">
                 </div>
 
-                <div class="result-box">
-                    <div class="result-grid">
+                <div style="background: #040711; border: 1px solid var(--accent-green); border-radius: 10px; padding: 14px; text-align: center; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-around;">
                         <div>
-                            <div id="res-kvp" class="result-val">75</div>
-                            <div class="result-lbl">Kilovoltaje (kVp)</div>
+                            <div id="gen-res-kvp" style="font-size: 28px; font-weight: 900; color: var(--accent-green);">75</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Kilovoltaje (kVp)</div>
                         </div>
                         <div>
-                            <div id="res-mas" class="result-val">20.00</div>
-                            <div class="result-lbl">Miliamperios-seg (mAs)</div>
+                            <div id="gen-res-mas" style="font-size: 28px; font-weight: 900; color: var(--accent-green);">20.00</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Miliamperios-seg (mAs)</div>
                         </div>
                     </div>
-                    <div id="alara-badge" style="margin-top: 10px; font-size: 11px; color: var(--accent-yellow);">⚡ Reducción de dosis absorbida en piel de 50% activa</div>
+                    <div id="gen-alara-badge" style="margin-top: 8px; font-size: 10px; color: var(--accent-yellow);">⚡ Reducción de dosis en piel de 50% activa</div>
                 </div>
 
-                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Oficial en Google Play</a>
+                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Completa en Google Play</a>
             </div>
         </div>
 
-        <!-- TAB 2: TÉCNICAS VERIFICADAS -->
-        <div id="tab-tech" style="display: none;">
+        <div id="tab-ayuda" style="display: none;">
             <div class="card">
-                <div class="card-title">📚 Cápsulas Radiológicas Verificadas (Bontrager / Merrill)</div>
+                <div class="card-title">❓ ¿Cómo Funcionan las Apps XrayTec?</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;">
+                    1️⃣ <strong>Mide el espesor en cm</strong> del paciente con la cinta calibradora.<br>
+                    2️⃣ <strong>Filtra por región corporal</strong> (Cráneo, Columna, Tórax, Miembros).<br>
+                    3️⃣ <strong>Ajusta el slider</strong> dentro de la ficha para calcular kVp y mAs.<br>
+                    4️⃣ <strong>Consulta el Rayo Central</strong> y la posición anatómica exacta (LOM, LIOM).
+                </p>
+            </div>
 
-                <div class="tech-item">
-                    <div class="tech-title">💀 Cráneo - Towne (AP Axial)</div>
-                    <div class="tech-detail">⚡ <b>Factores:</b> 75 kVp | 20.0 mAs (19 cm) | Foco Grueso | Rejilla 8:1</div>
-                    <div class="tech-detail">📍 <b>Rayo Central:</b> 30° Caudal a la LOM a 6.5 cm sobre glabela. Saliendo por foramen magno.</div>
-                    <div class="tech-detail" style="color: var(--accent-cyan); font-size: 10px; margin-top: 2px;">Fuente Verificada: Bontrager 7ma Ed. Cap. 11 / Merrill Cap. 20</div>
-                </div>
+            <div class="card" style="border-left: 4px solid var(--accent-yellow);">
+                <div class="card-title" style="color: var(--accent-yellow);">⚡ La Regla del 15% del kVp</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                    Ley física que demuestra que al incrementar el kVp un 15% y reducir el mAs a la mitad (÷2), se obtiene la misma densidad óptica **reduciendo la dosis en piel hasta en un 50%**.
+                </p>
+            </div>
 
-                <div class="tech-item">
-                    <div class="tech-title">💀 Cráneo - Submentovértice (SMV / Hirtz)</div>
-                    <div class="tech-detail">⚡ <b>Factores:</b> 80 kVp | 25.0 mAs (20 cm) | Foco Grueso | Rejilla 8:1</div>
-                    <div class="tech-detail">📍 <b>Rayo Central:</b> Perpendicular a LIOM entre arcos cigomáticos 2 cm anterior a MAE.</div>
-                    <div class="tech-detail" style="color: var(--accent-cyan); font-size: 10px; margin-top: 2px;">Fuente Verificada: Bontrager 7ma Ed. Cap. 11 / Merrill Cap. 20</div>
-                </div>
-
-                <div class="tech-item">
-                    <div class="tech-title">🦴 Columna - Sacro y Coxis (Lateral)</div>
-                    <div class="tech-detail">⚡ <b>Factores:</b> 85 kVp | 32.0 mAs (24 cm) | Foco Grueso | Rejilla 12:1</div>
-                    <div class="tech-detail">📍 <b>Rayo Central:</b> 8 cm posterior a la espina ilíaca anterosuperior (EIAS) al nivel de coxis.</div>
-                    <div class="tech-detail" style="color: var(--accent-cyan); font-size: 10px; margin-top: 2px;">Fuente Verificada: Bontrager 7ma Ed. Cap. 8</div>
-                </div>
+            <div class="card" style="border-left: 4px solid var(--accent-cyan);">
+                <div class="card-title" style="color: var(--accent-cyan);">🛡️ Principio de Protección ALARA</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                    <strong>ALARA</strong> (<em>As Low As Reasonably Achievable</em>): Muestra la dosis de radiación ionizante más baja posible compatible con una calidad diagnóstica óptima.
+                </p>
             </div>
         </div>
 
-        <!-- TAB 3: TRIVIA INTERACTIVA -->
         <div id="tab-quiz" style="display: none;">
             <div class="card">
                 <div class="card-title">🧠 Desafío de Trivia Radiológica</div>
-                <div id="quiz-q" style="font-size: 14px; font-weight: bold; margin-bottom: 12px;">¿Qué cambio ocurre al aplicar la Regla del 15% en el Kilovoltaje (kVp)?</div>
+                <div id="quiz-q" style="font-size: 13px; font-weight: bold; margin-bottom: 10px;">¿Qué cambio ocurre al aplicar la Regla del 15% en el Kilovoltaje (kVp)?</div>
                 <div id="quiz-opts">
                     <button class="quiz-opt" onclick="checkQuiz(this, true)">A. Incrementar el kVp un 15% permite reducir el mAs a la mitad, disminuyendo la dosis en piel hasta 50%.</button>
                     <button class="quiz-opt" onclick="checkQuiz(this, false)">B. Incrementar el kVp requiere duplicar el mAs para mantener la nitidez.</button>
                     <button class="quiz-opt" onclick="checkQuiz(this, false)">C. El mAs siempre permanece idéntico.</button>
                 </div>
-                <div id="quiz-expl" style="display:none; font-size: 12px; margin-top: 10px; padding: 10px; background: rgba(57,255,20,0.1); border-left: 3px solid var(--accent-green); border-radius: 4px;"></div>
+                <div id="quiz-expl" style="display:none; font-size: 11px; margin-top: 8px; padding: 8px; background: rgba(57,255,20,0.1); border-left: 3px solid var(--accent-green); border-radius: 4px;"></div>
             </div>
         </div>
 
-        <!-- TAB 4: FAQ -->
-        <div id="tab-faq" style="display: none;">
-            <div class="card">
-                <div class="card-title">❓ Preguntas Frecuentes & Física ALARA</div>
-                <div style="font-size: 13px; font-weight: bold; color: var(--accent-green); margin-bottom: 4px;">¿Qué es la Ley de Sante?</div>
-                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Es la fórmula matemática validada: kVp = (2 × Espesor en cm) + Constante de Rejilla. Permite calcular el kilovoltaje requerido para atravesar el espesor del tejido.</p>
-
-                <div style="font-size: 13px; font-weight: bold; color: var(--accent-green); margin-bottom: 4px;">¿Cómo funciona la regla del 15% ALARA?</div>
-                <p style="font-size: 12px; color: var(--text-muted);">Un aumento del 15% en kVp produce el mismo cambio en densidad que duplicar el mAs. Al subir el kVp un 15% y reducir el mAs a la mitad, se logra menor absorción tisular de radiación en el paciente.</p>
-            </div>
-        </div>
-
-        <!-- BLOQUE PUBLICITARIO INFERIOR ADSENSE DÍA 1 -->
         <div class="ad-container">
             <ins class="adsbygoogle"
                  style="display:block; width:100%;"
@@ -201,19 +211,225 @@
 
     </div>
 
-    <!-- STICKY FOOTER DE CONVERSIÓN A PLAY STORE -->
     <div class="sticky-footer">
         <div>
-            <div style="font-size: 12px; font-weight: bold; color: var(--accent-green);">App Completa para Android</div>
-            <div style="font-size: 10px; color: var(--text-muted);">Sonidos reales, cero internet & AdMob</div>
+            <div style="font-size: 11px; font-weight: bold; color: var(--accent-green);">XrayTec para Android</div>
+            <div style="font-size: 9px; color: var(--text-muted);">Sonidos reales de disparo & cero internet</div>
         </div>
-        <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="sticky-btn">📲 DESCARGAR</a>
+        <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="sticky-btn">📲 DESCARGAR APP</a>
     </div>
 
     <script>
+        const baseProyecciones = [
+            {
+                region: "craneo",
+                nombre: "💀 AP Axial de Cráneo (Método de Towne)",
+                espesor_ref: 19,
+                kvp_base: 75,
+                mas_base: 20.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Bucky 8:1 / 12:1",
+                rayo_central: "30° Caudal a la LOM (37° a la LIOM), 6.5 cm sobre glabela.",
+                linea_ref: "LOM (Línea Orbitomeatal)",
+                posicion: "Decúbito supino. Mentón deprimido.",
+                fuente: "Bontrager 7ma Ed. Cap. 11 / Merrill Cap. 20"
+            },
+            {
+                region: "craneo",
+                nombre: "💀 Submentovértice de Cráneo (SMV / Hirtz)",
+                espesor_ref: 20,
+                kvp_base: 80,
+                mas_base: 25.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Bucky 8:1 / 12:1",
+                rayo_central: "Perpendicular a LIOM entre arcos cigomáticos 2 cm anterior a MAE.",
+                linea_ref: "LIOM (Línea Infraorbitomeatal)",
+                posicion: "Cabeza hiperextendida.",
+                fuente: "Bontrager 7ma Ed. Cap. 11"
+            },
+            {
+                region: "cuello",
+                nombre: "🗣️ Lateral de Cuello (Partes Blandas)",
+                espesor_ref: 11,
+                kvp_base: 65,
+                mas_base: 6.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Sin Rejilla / Opcional 8:1",
+                rayo_central: "Perpendicular a nivel de C4 (cartílago tiroides).",
+                linea_ref: "Plano Medio Sagital paralelo al RI",
+                posicion: "Bipedestación, mentón elevado.",
+                fuente: "Merrill Atlas Cap. 8 / Bontrager Cap. 3"
+            },
+            {
+                region: "cervical",
+                nombre: "🦴 AP Transoral de C1-C2 (Odontoides)",
+                espesor_ref: 13,
+                kvp_base: 70,
+                mas_base: 12.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Rejilla Bucky 8:1",
+                rayo_central: "Perpendicular al centro de la boca abierta.",
+                linea_ref: "Borde inferior incisivos superiores a mastoides",
+                posicion: "Boca abierta al máximo fonando 'Ah'.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "cervical",
+                nombre: "🦴 Lateral de Columna Cervical",
+                espesor_ref: 12,
+                kvp_base: 70,
+                mas_base: 16.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Rejilla Bucky 8:1",
+                rayo_central: "Perpendicular a nivel de C4 (cartílago tiroides). DFI 180 cm.",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Sentado o bipedestación lateral.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "dorsal",
+                nombre: "🦴 AP de Columna Dorsal (Torácica)",
+                espesor_ref: 18,
+                kvp_base: 75,
+                mas_base: 20.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 8:1 / 12:1",
+                rayo_central: "Perpendicular a T7 (8 cm inferior a escotadura yugular).",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Decúbito supino. Rodillas flexionadas.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "lumbar",
+                nombre: "🦴 AP de Columna Lumbar",
+                espesor_ref: 20,
+                kvp_base: 75,
+                mas_base: 25.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular a nivel de crestas ilíacas (L4-L5).",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Decúbito supino.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "lumbar",
+                nombre: "🦴 Lateral de Sacro y Coxis",
+                espesor_ref: 24,
+                kvp_base: 85,
+                mas_base: 32.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular 8 cm posterior a EIAS al nivel del coxis.",
+                linea_ref: "Plano Mediocoronal",
+                posicion: "Decúbito lateral estricto.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "torax",
+                nombre: "🫁 PA de Tórax (Tele de Tórax)",
+                espesor_ref: 21,
+                kvp_base: 115,
+                mas_base: 4.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular a T7 (DFI 180 cm) en inspiración profunda.",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Bipedestación PA.",
+                fuente: "Bontrager 7ma Ed. Cap. 3"
+            },
+            {
+                region: "abdomen",
+                nombre: "🫃 AP de Abdomen en Decúbito (KUB)",
+                espesor_ref: 22,
+                kvp_base: 75,
+                mas_base: 25.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular a nivel de crestas ilíacas (L4).",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Decúbito supino.",
+                fuente: "Bontrager 7ma Ed. Cap. 3"
+            },
+            {
+                region: "miembros",
+                nombre: "🦴 AP de Rodilla",
+                espesor_ref: 11,
+                kvp_base: 65,
+                mas_base: 6.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Sin Rejilla / Opcional 8:1",
+                rayo_central: "5° Cefálico a 0°, 1.5 cm inferior al ápice de la rótula.",
+                linea_ref: "Centro articulación rodilla",
+                posicion: "Decúbito supino.",
+                fuente: "Bontrager 7ma Ed. Cap. 6"
+            }
+        ];
+
         if (window.Telegram && window.Telegram.WebApp) {
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
+        }
+
+        function renderProyecciones(filterRegionName = "todas") {
+            const container = document.getElementById('proyecciones-list');
+            container.innerHTML = '';
+
+            const list = filterRegionName === 'todas' 
+                ? baseProyecciones 
+                : baseProyecciones.filter(p => p.region === filterRegionName);
+
+            list.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'struct-card';
+                card.innerHTML = `
+                    <div class="struct-header">
+                        <span>${p.nombre}</span>
+                        <span class="struct-tag">${p.region.toUpperCase()}</span>
+                    </div>
+
+                    <div class="factores-grid">
+                        <div class="factor-item">kVp Base: <span id="kvp-val-${idx}" class="factor-val">${p.kvp_base}</span></div>
+                        <div class="factor-item">mAs Base: <span id="mas-val-${idx}" class="factor-val">${p.mas_base.toFixed(2)}</span></div>
+                        <div class="factor-item">Foco: <span style="color:#fff;">${p.foco}</span></div>
+                        <div class="factor-item">Rejilla: <span style="color:#fff;">${p.rejilla}</span></div>
+                    </div>
+
+                    <div class="info-row">📍 <strong>Rayo Central:</strong> ${p.rayo_central}</div>
+                    <div class="info-row">📐 <strong>Línea de Ref:</strong> ${p.linea_ref}</div>
+                    <div class="info-row">🧘 <strong>Posicionamiento:</strong> ${p.posicion}</div>
+
+                    <div class="calc-adjust-box">
+                        <div class="control-label">
+                            <span>Ajustar Espesor Paciente (cm):</span>
+                            <span id="cm-badge-${idx}" class="val-badge">${p.espesor_ref} cm</span>
+                        </div>
+                        <input type="range" min="1" max="50" value="${p.espesor_ref}" oninput="adjustStructCalc(${idx}, this.value, ${p.kvp_base}, ${p.mas_base}, ${p.espesor_ref})">
+                    </div>
+
+                    <div style="font-size: 9px; color: var(--accent-cyan); margin-top: 6px; text-align: right;">Fuente: ${p.fuente}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function adjustStructCalc(idx, newCm, baseKvp, baseMas, refCm) {
+            document.getElementById(`cm-badge-${idx}`).innerText = newCm + ' cm';
+            const diffCm = newCm - refCm;
+            let calcKvp = Math.round(baseKvp + (diffCm * 2));
+            let calcMas = baseMas;
+
+            calcKvp = Math.round(calcKvp * 1.15);
+            calcMas = calcMas / 2.0;
+
+            document.getElementById(`kvp-val-${idx}`).innerText = calcKvp;
+            document.getElementById(`mas-val-${idx}`).innerText = calcMas.toFixed(2);
+        }
+
+        function filterRegion(evt, regionName) {
+            document.querySelectorAll('.region-pill').forEach(b => b.classList.remove('active'));
+            evt.target.classList.add('active');
+            renderProyecciones(regionName);
         }
 
         function switchTab(evt, tabId) {
@@ -224,10 +440,10 @@
             document.getElementById('tab-' + tabId).style.display = 'block';
         }
 
-        function updateCalc() {
-            const thickness = parseInt(document.getElementById('thickness-slider').value);
-            const isAlara = document.getElementById('alara-toggle').checked;
-            document.getElementById('thickness-val').innerText = thickness + ' cm';
+        function updateGenCalc() {
+            const thickness = parseInt(document.getElementById('gen-thickness-slider').value);
+            const isAlara = document.getElementById('gen-alara-toggle').checked;
+            document.getElementById('gen-thickness-val').innerText = thickness + ' cm';
 
             let baseKvp = (2 * thickness) + 30;
             let baseMas = thickness <= 10 ? 4.0 : (thickness <= 20 ? 20.0 : 32.0);
@@ -235,13 +451,13 @@
             if (isAlara) {
                 baseKvp = Math.round(baseKvp * 1.15);
                 baseMas = baseMas / 2.0;
-                document.getElementById('alara-badge').style.display = 'block';
+                document.getElementById('gen-alara-badge').style.display = 'block';
             } else {
-                document.getElementById('alara-badge').style.display = 'none';
+                document.getElementById('gen-alara-badge').style.display = 'none';
             }
 
-            document.getElementById('res-kvp').innerText = baseKvp;
-            document.getElementById('res-mas').innerText = baseMas.toFixed(2);
+            document.getElementById('gen-res-kvp').innerText = baseKvp;
+            document.getElementById('gen-res-mas').innerText = baseMas.toFixed(2);
         }
 
         function checkQuiz(btn, isCorrect) {
@@ -256,6 +472,8 @@
             }
             expl.style.display = 'block';
         }
+
+        renderProyecciones('todas');
     </script>
 </body>
 </html>
