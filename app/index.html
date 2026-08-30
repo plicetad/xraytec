@@ -206,7 +206,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: TRIVIA INTERACTIVA EN 3 CATEGORÍAS ESPECIALIZADAS CON RECOMPENSA (ADSGRAM 45295) -->
+        <!-- TAB 3: TRIVIA INTERACTIVA EN 3 CATEGORÍAS ESPECIALIZADAS CON BONO RECOMPENSADO (ADSGRAM 45295) -->
         <div id="tab-trivia" style="display: none;">
             <div class="card">
                 <div class="card-title">🧠 Desafío de Casos Clínicos Multidisciplinarios</div>
@@ -236,22 +236,22 @@
                     </div>
                 </div>
 
-                <!-- CAJA DE BLOQUEO DE RECOMPENSA ADSGRAM (BLOCK ID 45295) -->
-                <div id="reward-unlock-box" class="reward-unlock-box">
-                    <div style="font-size: 14px; font-weight: 900; color: var(--accent-yellow); margin-bottom: 6px;">🔒 Respuesta Registrada</div>
-                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
-                        Mira un breve video publicitario de 15 segundos para comprobar si acertaste y desbloquear la <strong>Explicación Física Académica y Cita Bibliográfica Oficial</strong>.
-                    </div>
-                    <button class="btn-reward" onclick="desbloquearRespuestaConAnuncio()">
-                        <span>🎬 REVELAR RESPUESTA Y EXPLICACIÓN CON VIDEO</span>
-                    </button>
-                </div>
-
-                <!-- CAJA DE RESULTADO EXPLICADO DE LA TRIVIA -->
+                <!-- CAJA DE RESULTADO EXPLICADO DE LA TRIVIA (LIBRE E INMEDIATO - COMPLIANT ADSGRAM) -->
                 <div id="quiz-result-expl" style="display:none; margin-top: 14px; padding: 12px; background: #040711; border-left: 4px solid var(--accent-green); border-radius: 8px;">
-                    <div style="font-size: 13px; font-weight: 900; color: var(--accent-green); margin-bottom: 6px;">✅ ¡EXPLICACIÓN ACADÉMICA DESBLOQUEADA!</div>
+                    <div style="font-size: 13px; font-weight: 900; color: var(--accent-green); margin-bottom: 6px;">✅ EXPLICACIÓN CLÍNICA OFICIAL</div>
                     <div id="quiz-result-text" style="font-size: 11px; color: #fff; line-height: 1.5;"></div>
                     <div id="quiz-result-source" style="font-size: 9px; color: var(--accent-cyan); margin-top: 8px;">Fuente: Bontrager's Textbook of Radiographic Positioning 7ma Ed.</div>
+                </div>
+
+                <!-- CAJA DE BONO VOLUNTARIO RECOMPENSADO ADSGRAM (BLOCK ID 45295) -->
+                <div id="reward-unlock-box" class="reward-unlock-box">
+                    <div style="font-size: 14px; font-weight: 900; color: var(--accent-yellow); margin-bottom: 6px;">⭐ ¿Quieres ganar +50 Puntos de Experiencia (XP)?</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                        Mira un breve video patrocinado opcional de 15s para apoyar el servidor y obtener <strong>+50 Puntos de Experiencia Radiológica</strong>.
+                    </div>
+                    <button class="btn-reward" onclick="desbloquearRespuestaConAnuncio()">
+                        <span>🎬 OBTENER +50 PUNTOS XP CON VIDEO PATROCINADO</span>
+                    </button>
                 </div>
 
             </div>
@@ -453,35 +453,13 @@
             document.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             selectedQuizOption = optionIdx;
-            document.getElementById('reward-unlock-box').style.display = 'block';
-        }
 
-        function desbloquearRespuestaConAnuncio() {
-            if (AdControllerReward) {
-                AdControllerReward.show().then((result) => {
-                    revelarExplicaciónTrivia();
-                }).catch((error) => {
-                    revelarExplicaciónTrivia();
-                });
-            } else if (window.Adsgram) {
-                window.Adsgram.init({ blockId: "45295" }).show().then(() => {
-                    revelarExplicaciónTrivia();
-                }).catch((e) => {
-                    revelarExplicaciónTrivia();
-                });
-            } else {
-                revelarExplicaciónTrivia();
-            }
-        }
-
-        function revelarExplicaciónTrivia() {
-            document.getElementById('reward-unlock-box').style.display = 'none';
+            // 1. REVELAR RESPUESTA BÁSICA DE INMEDIATO (LIBRE - CUMPLE REGLAS 3 Y 4 ADSGRAM)
+            const item = bancoTriviasMiniApp[currentCat][currentQuizIndex];
             const resultBox = document.getElementById('quiz-result-expl');
             const resultText = document.getElementById('quiz-result-text');
             const resultSource = document.getElementById('quiz-result-source');
             const opts = document.querySelectorAll('.quiz-opt');
-
-            const item = bancoTriviasMiniApp[currentCat][currentQuizIndex];
 
             opts.forEach((b, idx) => {
                 b.disabled = true;
@@ -490,13 +468,39 @@
             });
 
             if (selectedQuizOption === item.correct) {
-                resultText.innerHTML = "<strong>¡CORRECTO!</strong><br>" + item.expl;
+                resultText.innerHTML = "<strong>✅ ¡RESPUESTA CORRECTA!</strong><br>" + item.expl;
             } else {
-                resultText.innerHTML = "<strong>RESPUESTA INCORRECTA (La correcta era la " + item.opts[item.correct].substring(0, 1) + ").</strong><br>" + item.expl;
+                resultText.innerHTML = "<strong>❌ RESPUESTA INCORRECTA (La correcta era la " + item.opts[item.correct].substring(0, 1) + ").</strong><br>" + item.expl;
             }
 
             if (resultSource) resultSource.innerText = item.source;
             resultBox.style.display = 'block';
+
+            // 2. OFRECER RECOMPENSA VOLUNTARIA OPCIONAL DE PUNTOS XP (CUMPLE REGLA 6 ADSGRAM)
+            document.getElementById('reward-unlock-box').style.display = 'block';
+        }
+
+        function desbloquearRespuestaConAnuncio() {
+            if (AdControllerReward) {
+                AdControllerReward.show().then((result) => {
+                    otorgarBonoRecompensa();
+                }).catch((error) => {
+                    otorgarBonoRecompensa();
+                });
+            } else if (window.Adsgram) {
+                window.Adsgram.init({ blockId: "45295" }).show().then(() => {
+                    otorgarBonoRecompensa();
+                }).catch((e) => {
+                    otorgarBonoRecompensa();
+                });
+            } else {
+                otorgarBonoRecompensa();
+            }
+        }
+
+        function otorgarBonoRecompensa() {
+            document.getElementById('reward-unlock-box').style.display = 'none';
+            alert("🌟 ¡BONO OTORGADO! Has ganado +50 Puntos Radiológicos de Experiencia (XP) por apoyar la plataforma.");
         }
 
         const baseProyecciones = [
