@@ -206,7 +206,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: TRIVIA INTERACTIVA EN 3 CATEGORÍAS ESPECIALIZADAS CON RECOMPENSA (ADSGRAM 45202) -->
+        <!-- TAB 3: TRIVIA INTERACTIVA EN 3 CATEGORÍAS ESPECIALIZADAS CON RECOMPENSA (ADSGRAM 45295) -->
         <div id="tab-trivia" style="display: none;">
             <div class="card">
                 <div class="card-title">🧠 Desafío de Casos Clínicos Multidisciplinarios</div>
@@ -236,7 +236,7 @@
                     </div>
                 </div>
 
-                <!-- CAJA DE BLOQUEO DE RECOMPENSA ADSGRAM (BLOCK ID 45202) -->
+                <!-- CAJA DE BLOQUEO DE RECOMPENSA ADSGRAM (BLOCK ID 45295) -->
                 <div id="reward-unlock-box" class="reward-unlock-box">
                     <div style="font-size: 14px; font-weight: 900; color: var(--accent-yellow); margin-bottom: 6px;">🔒 Respuesta Registrada</div>
                     <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
@@ -309,27 +309,27 @@
         let consultaCounter = 0;
         let selectedQuizOption = null;
 
-        // CONTROLADOR 1: ADSGRAM INTERSTITIAL (BLOQUE int-45201)
+        // CONTROLADOR 1: ADSGRAM INTERSTITIAL (BLOQUE OFICIAL int-45293)
         let AdControllerInt = null;
         if (window.Adsgram) {
-            AdControllerInt = window.Adsgram.init({ blockId: "int-45201" });
+            AdControllerInt = window.Adsgram.init({ blockId: "int-45293" });
         }
 
-        // CONTROLADOR 2: ADSGRAM REWARD (NUEVO BLOQUE DE RECOMPENSA 45202)
+        // CONTROLADOR 2: ADSGRAM REWARD (BLOQUE OFICIAL 45295)
         let AdControllerReward = null;
         if (window.Adsgram) {
-            AdControllerReward = window.Adsgram.init({ blockId: "45202" });
+            AdControllerReward = window.Adsgram.init({ blockId: "45295" });
         }
 
         function mostrarAnuncioAdsgram() {
             if (AdControllerInt) {
                 AdControllerInt.show().then((result) => {
-                    console.log("Intersticial Adsgram int-45201 completado.");
+                    console.log("Intersticial Adsgram int-45293 completado.");
                 }).catch((error) => {
                     console.warn("Intersticial cerrado o no disponible.", error);
                 });
             } else if (window.Adsgram) {
-                window.Adsgram.init({ blockId: "int-45201" }).show().catch(e => console.warn(e));
+                window.Adsgram.init({ blockId: "int-45293" }).show().catch(e => console.warn(e));
             }
         }
 
@@ -464,7 +464,7 @@
                     revelarExplicaciónTrivia();
                 });
             } else if (window.Adsgram) {
-                window.Adsgram.init({ blockId: "45202" }).show().then(() => {
+                window.Adsgram.init({ blockId: "45295" }).show().then(() => {
                     revelarExplicaciónTrivia();
                 }).catch((e) => {
                     revelarExplicaciónTrivia();
