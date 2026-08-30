@@ -68,8 +68,9 @@
         .val-badge { color: var(--accent-green); font-weight: bold; font-size: 13px; }
         input[type="range"] { width: 100%; accent-color: var(--accent-green); cursor: pointer; }
 
-        /* Contenedor de Banner */
-        .tma-banner-container { background: #040711; border: 1px solid var(--card-border); border-radius: 10px; padding: 8px; margin: 10px 0; text-align: center; min-height: 60px; display: flex; align-items: center; justify-content: center; }
+        /* Contenedor de Banner Transparente y Auto-Colapsable */
+        .tma-banner-container { background: transparent; border: none; padding: 0; margin: 0; text-align: center; width: 100%; min-height: 0; }
+        .tma-banner-container:empty { display: none; }
 
         /* Banner Promocional Teaser */
         .teaser-card { background: linear-gradient(135deg, #064e3b, #0f172a); border: 1px solid var(--accent-green); padding: 14px; border-radius: 12px; margin-top: 12px; text-align: center; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
