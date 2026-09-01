@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XrayTec - Guía y Calculadora Radiológica Médica</title>
+    <!-- SDK oficial de Telegram Mini Apps -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- SDK oficial de Adsgram -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8507296424570065" crossorigin="anonymous"></script>
+
+    <style>
+        :root {
+            --bg-color: #060911;
+            --card-bg: #0f172a;
+            --card-border: #1e293b;
+            --accent-green: #39ff14;
+            --accent-cyan: #00f2fe;
+            --accent-yellow: #ffd700;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 90px; }
+
+        /* Header con Branding */
+        header { background: #0b1120; padding: 12px 16px; border-bottom: 2px solid var(--accent-green); position: sticky; top: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
+        .header-brand { display: flex; align-items: center; gap: 10px; }
+        .header-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
+        .header-subtitle { font-size: 10px; color: var(--accent-cyan); font-weight: 600; }
+        .badge-pro { font-size: 10px; background: rgba(57, 255, 20, 0.12); color: var(--accent-green); border: 1px solid var(--accent-green); padding: 3px 8px; border-radius: 12px; font-weight: 800; }
+
+        .container { padding: 14px; max-width: 600px; margin: 0 auto; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
+        .tab-btn { background: #0f172a; color: var(--text-muted); border: 1px solid var(--card-border); padding: 10px 12px; border-radius: 10px; font-weight: bold; font-size: 12px; cursor: pointer; white-space: nowrap; flex: 1; text-align: center; transition: all 0.2s; }
+        .tab-btn.active { background: linear-gradient(135deg, #047857, #10b981); color: #fff; border-color: var(--accent-green); box-shadow: 0 0 12px rgba(57,255,20,0.3); }
+
+        /* Region Bar */
+        .region-bar { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; scrollbar-width: none; }
+        .region-bar::-webkit-scrollbar { display: none; }
+        .region-pill { background: #1e293b; color: var(--text-muted); border: 1px solid var(--card-border); padding: 7px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+        .region-pill.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); font-weight: 900; }
+
+        /* Cards */
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+        .card-title { font-size: 15px; font-weight: 800; color: var(--accent-cyan); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+
+        /* Projections Cards */
+        .struct-card { border-left: 4px solid var(--accent-green); background: #0b1120; padding: 14px; border-radius: 10px; margin-bottom: 12px; border-top: 1px solid var(--card-border); border-right: 1px solid var(--card-border); border-bottom: 1px solid var(--card-border); }
+        .struct-header { font-size: 14px; font-weight: 800; color: #fff; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .struct-tag { font-size: 10px; background: #1e293b; color: var(--accent-cyan); padding: 2px 8px; border-radius: 12px; font-weight: 700; }
+        
+        .factores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; background: #040711; padding: 10px; border-radius: 8px; border: 1px solid #1e293b; }
+        .factor-item { font-size: 11px; color: var(--text-muted); }
+        .factor-val { color: var(--accent-green); font-weight: 900; font-size: 14px; }
+
+        .info-row { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+        .info-row strong { color: var(--text-main); }
+
+        /* Interactive Slider Box */
+        .calc-adjust-box { background: #131c31; padding: 12px; border-radius: 8px; margin-top: 10px; border: 1px dashed var(--accent-cyan); }
+        .control-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .val-badge { color: var(--accent-green); font-weight: bold; font-size: 13px; }
+        input[type="range"] { width: 100%; accent-color: var(--accent-green); cursor: pointer; }
+
+        /* Contenedor de Banner */
+        /* Contenedor de Banner Transparente y Auto-Colapsable (0px de espacio si no hay anuncio) */
+        .tma-banner-container { background: transparent !important; border: none !important; padding: 0 !important; margin: 0 !important; text-align: center; width: 100%; min-height: 0 !important; box-shadow: none !important; overflow: hidden; }
+        .tma-banner-container:empty { display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important; }
+        ins.adsbygoogle:empty { display: none !important; height: 0 !important; }
+
+        /* Banner Promocional Teaser */
+        .teaser-card { background: linear-gradient(135deg, #064e3b, #0f172a); border: 1px solid var(--accent-green); padding: 14px; border-radius: 12px; margin-top: 12px; text-align: center; box-shadow: 0 4px 16px rgba(57,255,20,0.15); }
+        .teaser-title { font-size: 13px; font-weight: 800; color: var(--accent-green); margin-bottom: 6px; }
+        .teaser-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 10px; line-height: 1.4; }
+
+        /* Quiz Buttons & Locks */
+        .quiz-opt { background: #1e293b; border: 1px solid var(--card-border); color: var(--text-main); padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; text-align: left; width: 100%; transition: all 0.2s; }
+        .quiz-opt:hover { border-color: var(--accent-cyan); }
+        .quiz-opt.selected { border-color: var(--accent-yellow); background: #1e1b4b; }
+        .quiz-opt.correct { background: #065f46; border-color: var(--accent-green); color: #fff; }
+        .quiz-opt.wrong { background: #881337; border-color: #f43f5e; color: #fff; }
+
+        .reward-unlock-box { background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 2px dashed var(--accent-yellow); padding: 16px; border-radius: 12px; margin-top: 12px; text-align: center; display: none; }
+
+        /* Buttons & Sticky Footer */
+        .btn-primary { width: 100%; background: linear-gradient(90deg, #047857, #10b981); color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 800; cursor: pointer; text-decoration: none; display: block; text-align: center; box-shadow: 0 4px 12px rgba(16,185,129,0.3); }
+        .btn-reward { width: 100%; background: linear-gradient(90deg, #eab308, #ca8a04); color: #000; border: none; padding: 13px; border-radius: 10px; font-size: 13px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 12px rgba(234,179,8,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+        .sticky-footer { position: fixed; bottom: 0; left: 0; right: 0; background: #0b1120; border-top: 2px solid var(--accent-green); padding: 8px 14px; display: flex; align-items: center; justify-content: space-between; z-index: 200; box-shadow: 0 -4px 16px rgba(0,0,0,0.7); }
+        .sticky-btn { background: var(--accent-green); color: #000; text-decoration: none; padding: 8px 14px; border-radius: 8px; font-weight: 900; font-size: 11px; letter-spacing: 0.5px; box-shadow: 0 0 10px rgba(57,255,20,0.4); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-brand">
+            <div style="width:32px; height:32px; border-radius:50%; background:var(--accent-green); display:flex; align-items:center; justify-content:center; color:#000; font-weight:bold; font-size:18px;">☢️</div>
+            <div>
+                <div class="header-title">XrayTec</div>
+                <div class="header-subtitle">Guía & Calculadora Médica</div>
+            </div>
+        </div>
+        <span class="badge-pro">ALARA Verified</span>
+    </header>
+
+    <div class="container">
+        
+        <!-- PESTAÑAS PRINCIPALES -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'consulta')">🔍 Consulta Regiones</button>
+            <button class="tab-btn" onclick="switchTab(event, 'calc')">🧮 Calculadora Directa</button>
+            <button class="tab-btn" onclick="switchTab(event, 'trivia')">🧠 Trivia & Casos</button>
+            <button class="tab-btn" onclick="switchTab(event, 'ayuda')">❓ Ayuda & ALARA</button>
+        </div>
+
+        <div id="telegram-ad-banner-top" class="tma-banner-container">
+            <ins class="adsbygoogle"
+                 style="display:block; width:100%;"
+                 data-ad-client="ca-pub-8507296424570065"
+                 data-ad-slot="1000000001"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+        <!-- TAB 1: CONSULTA DE REGIONES ANATÓMICAS -->
+
+            <!-- TARJETA OFICIAL VIP: COMPENDIO PRO PDF (25 ESTRELLAS TELEGRAM STARS) -->
+            <div class="teaser-card" style="background: linear-gradient(135deg, #1e1b4b, #0f172a); border: 2px solid #ffd700; margin-bottom: 14px;">
+                <div class="teaser-title" style="color: #ffd700; font-size: 14px; font-weight: 900;">⭐ COMPENDIO RADIOLÓGICO XRAYTEC PRO (PDF)</div>
+                <div class="teaser-desc" style="color: #f8fafc; font-size: 11px;">
+                    Obtén el <strong>Compendio Clínico Completo</strong>: 25 proyecciones radiológicas con tablas de parámetros base, Fórmula de Sante, Módulo de Distancia Foco-Receptor (DFI) y Tips ALARA por solo <strong>25 Estrellas de Telegram (25 XTR)</strong> (~$0.40 USD).
+                </div>
+                
+                <button id="btn-buy-pdf-stars" onclick="comprarCompendioStars()" class="btn-reward" style="background: linear-gradient(90deg, #ffd700, #f59e0b); color: #000; font-weight: 900; margin-top: 8px;">
+                    ⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)
+                </button>
+
+                <div id="pdf-unlocked-success" style="display:none; margin-top: 10px; padding: 10px; background: #065f46; border: 1px solid #39ff14; border-radius: 8px;">
+                    <div style="font-size: 12px; font-weight: bold; color: #39ff14;">🎉 ¡PAGO CONFIRMADO! COMPENDIO PRO DESBLOQUEADO</div>
+                    <a href="./Compendio_Radiologico_XrayTec_PRO.pdf" target="_blank" download class="btn-primary" style="margin-top: 8px; background: #39ff14; color: #000;">
+                        📥 DESCARGAR COMPENDIO PDF OFICIAL
+                    </a>
+                </div>
+            </div>
+
+        <div id="tab-consulta">
+            <div class="region-bar">
+                <button class="region-pill active" onclick="filterRegion(event, 'todas')">Todas las Regiones</button>
+                <button class="region-pill" onclick="filterRegion(event, 'craneo')">💀 Cráneo</button>
+                <button class="region-pill" onclick="filterRegion(event, 'cuello')">🗣️ Cuello</button>
+                <button class="region-pill" onclick="filterRegion(event, 'cervical')">🦴 C. Cervical</button>
+                <button class="region-pill" onclick="filterRegion(event, 'dorsal')">🦴 C. Dorsal</button>
+                <button class="region-pill" onclick="filterRegion(event, 'lumbar')">🦴 C. Lumbar</button>
+                <button class="region-pill" onclick="filterRegion(event, 'torax')">🫁 Tórax</button>
+                <button class="region-pill" onclick="filterRegion(event, 'abdomen')">🫃 Abdomen</button>
+                <button class="region-pill" onclick="filterRegion(event, 'miembros')">🦴 Miembros</button>
+            </div>
+
+            <div id="proyecciones-list"></div>
+
+            <div class="teaser-card">
+                <div class="teaser-title">📱 Máxima Versatilidad Radiológica en tu Bolsillo</div>
+                <div class="teaser-desc">Disfruta de la experiencia hospitalaria completa: descarga la <strong>App Nativa para Android que funciona 100% Sin Conexión a Internet</strong> dentro del búnker plomado de rayos X, con consola oscura y sonidos reales de disparo.</div>
+                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary">📲 Descargar App Oficial en Google Play</a>
+            </div>
+        </div>
+
+        <!-- TAB 2: CALCULADORA DIRECTA -->
+        <div id="tab-calc" style="display: none;">
+            <div class="card">
+                <div class="card-title">🧮 Calculadora de Exposición por Espesor</div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Espesor Anatómico (cm):</span>
+                        <span id="gen-thickness-val" class="val-badge">19 cm</span>
+                    </div>
+                    <input type="range" id="gen-thickness-slider" min="1" max="60" value="19" oninput="updateGenCalc()">
+                </div>
+
+                <div class="control-group" style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                    <span style="font-size: 12px;">Optimización ALARA (15% Rule):</span>
+                    <input type="checkbox" id="gen-alara-toggle" checked onchange="updateGenCalc()" style="width: 18px; height: 18px; accent-color: var(--accent-green);">
+                </div>
+
+                <div style="background: #040711; border: 1px solid var(--accent-green); border-radius: 10px; padding: 14px; text-align: center; margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-around;">
+                        <div>
+                            <div id="gen-res-kvp" style="font-size: 28px; font-weight: 900; color: var(--accent-green);">75</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Kilovoltaje (kVp)</div>
+                        </div>
+                        <div>
+                            <div id="gen-res-mas" style="font-size: 28px; font-weight: 900; color: var(--accent-green);">20.00</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Miliamperios-seg (mAs)</div>
+                        </div>
+                    </div>
+                    <div id="gen-alara-badge" style="margin-top: 8px; font-size: 10px; color: var(--accent-yellow);">⚡ Reducción de dosis en piel de 50% activa</div>
+                </div>
+
+                <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="btn-primary" style="margin-top: 12px;">📲 Descargar App Completa en Google Play</a>
+            </div>
+        </div>
+
+        <!-- TAB 3: TRIVIA INTERACTIVA EN 3 CATEGORÍAS ESPECIALIZADAS CON RECOMPENSA (ADSGRAM 45202) -->
+        <div id="tab-trivia" style="display: none;">
+            <div class="card">
+                <div class="card-title">🧠 Desafío de Casos Clínicos Multidisciplinarios</div>
+                
+                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">
+                    Selecciona una categoría clínica para poner a prueba tus conocimientos diagnósticos:
+                </div>
+
+                <!-- SELECCIÓN DE 3 CATEGORÍAS ESPECIALIZADAS -->
+                <div style="display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px;">
+                    <button class="region-pill active" id="btn-cat-rx" onclick="switchTriviaCategory('rx')">☢️ Rayos X</button>
+                    <button class="region-pill" id="btn-cat-us" onclick="switchTriviaCategory('us')">🔊 Ultrasonido</button>
+                    <button class="region-pill" id="btn-cat-tc" onclick="switchTriviaCategory('tc')">🌀 Tomografía (TC)</button>
+                </div>
+
+                <div id="quiz-question-box">
+                    <div id="quiz-cat-tag" style="font-size: 11px; color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">CATEGORÍA: RAYOS X CONVENCIONAL & DIGITAL</div>
+                    <div id="quiz-q" style="font-size: 13px; font-weight: bold; margin-bottom: 12px; line-height: 1.4;">
+                        En un paciente con fractura de fémur inmovilizado con un YESO HÚMEDO (fresco), ¿cuál es el ajuste de Kilovoltaje (kVp) o mAs requerido para evitar la subexposición?
+                    </div>
+
+                    <div id="quiz-opts">
+                        <button class="quiz-opt" onclick="selectQuizOpt(this, 0)">A. Incrementar de +10 a +12 kVp (o duplicar +100% mAs) debido a la densidad de la humedad.</button>
+                        <button class="quiz-opt" onclick="selectQuizOpt(this, 1)">B. Reducir el kVp un -15% para evitar sobreexponer el hueso.</button>
+                        <button class="quiz-opt" onclick="selectQuizOpt(this, 2)">C. Mantener la técnica estándar sin cambios.</button>
+                        <button class="quiz-opt" onclick="selectQuizOpt(this, 3)">D. Disminuir el mAs a la mitad sin modificar el kVp.</button>
+                    </div>
+                </div>
+
+                <!-- CAJA DE BLOQUEO DE RECOMPENSA ADSGRAM (BLOCK ID 45202) -->
+                <div id="reward-unlock-box" class="reward-unlock-box">
+                    <div style="font-size: 14px; font-weight: 900; color: var(--accent-yellow); margin-bottom: 6px;">⭐ ¿Quieres ganar +50 Puntos de Experiencia (XP)?</div>
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                        Mira un breve video patrocinado opcional de 15s para apoyar el servidor y obtener <strong>+50 Puntos de Experiencia Radiológica</strong>.
+                    </div>
+                    <button class="btn-reward" onclick="desbloquearRespuestaConAnuncio()">
+                        <span>🎬 OBTENER +50 PUNTOS XP CON VIDEO PATROCINADO</span>
+                    </button>
+                </div>
+
+                <!-- CAJA DE RESULTADO EXPLICADO DE LA TRIVIA -->
+                <div id="quiz-result-expl" style="display:none; margin-top: 14px; padding: 12px; background: #040711; border-left: 4px solid var(--accent-green); border-radius: 8px;">
+                    <div style="font-size: 13px; font-weight: 900; color: var(--accent-green); margin-bottom: 6px;">✅ ¡EXPLICACIÓN ACADÉMICA DESBLOQUEADA!</div>
+                    <div id="quiz-result-text" style="font-size: 11px; color: #fff; line-height: 1.5;"></div>
+                    <div id="quiz-result-source" style="font-size: 9px; color: var(--accent-cyan); margin-top: 8px;">Fuente: Bontrager's Textbook of Radiographic Positioning 7ma Ed.</div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- TAB 4: AYUDA & ALARA -->
+        <div id="tab-ayuda" style="display: none;">
+            <div class="card">
+                <div class="card-title">❓ ¿Cómo Funcionan las Apps XrayTec?</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px;">
+                    1️⃣ <strong>Mide el espesor en cm</strong> del paciente con la cinta calibradora.<br>
+                    2️⃣ <strong>Filtra por región corporal</strong> (Cráneo, Columna, Tórax, Miembros).<br>
+                    3️⃣ <strong>Ajusta el slider</strong> dentro de la ficha para calcular kVp y mAs.<br>
+                    4️⃣ <strong>Consulta el Rayo Central</strong> y la posición anatómica exacta (LOM, LIOM).
+                </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--accent-yellow);">
+                <div class="card-title" style="color: var(--accent-yellow);">⚡ La Regla del 15% del kVp</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                    Ley física que demuestra que al incrementar el kVp un 15% y reducir el mAs a la mitad (÷2), se obtiene la misma densidad óptica **reduciendo la dosis en piel hasta en un 50%**.
+                </p>
+            </div>
+
+            <div class="card" style="border-left: 4px solid var(--accent-cyan);">
+                <div class="card-title" style="color: var(--accent-cyan);">🛡️ Principio de Protección ALARA</div>
+                <p style="font-size: 11px; color: var(--text-muted); line-height: 1.5;">
+                    <strong>ALARA</strong> (<em>As Low As Reasonably Achievable</em>): Muestra la dosis de radiación ionizante más baja posible compatible con una calidad diagnóstica óptima.
+                </p>
+            </div>
+        </div>
+
+        <div id="telegram-ad-banner-bottom" class="tma-banner-container">
+            <ins class="adsbygoogle"
+                 style="display:block; width:100%;"
+                 data-ad-client="ca-pub-8507296424570065"
+                 data-ad-slot="1000000002"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
+
+    </div>
+
+    <!-- STICKY FOOTER DE CONVERSIÓN A PLAY STORE -->
+    <div class="sticky-footer">
+        <div>
+            <div style="font-size: 11px; font-weight: bold; color: var(--accent-green);">XrayTec para Android</div>
+            <div style="font-size: 9px; color: var(--text-muted);">Sonidos reales de disparo & cero internet</div>
+            <div style="font-size: 9px; color: var(--text-muted);"><a href="./privacy.html" target="_blank" style="color: var(--accent-cyan); text-decoration: underline;">🔒 Política de Privacidad</a></div>
+        </div>
+        <a href="https://play.google.com/store/apps/details?id=com.xraytec.calculadoraradiologica" target="_blank" class="sticky-btn">📲 DESCARGAR APP</a>
+    </div>
+
+    <script>
+        let consultaCounter = 0;
+        let selectedQuizOption = null;
+
+        // CONTROLADOR 1: ADSGRAM INTERSTITIAL (BLOQUE int-45201)
+        let AdControllerInt = null;
+        if (window.Adsgram) {
+            AdControllerInt = window.Adsgram.init({ blockId: "int-45293" });
+        }
+
+        // CONTROLADOR 2: ADSGRAM REWARD (NUEVO BLOQUE DE RECOMPENSA 45202)
+        let AdControllerReward = null;
+        if (window.Adsgram) {
+            AdControllerReward = window.Adsgram.init({ blockId: "45295" });
+        }
+
+        function mostrarAnuncioAdsgram() {
+            if (AdControllerInt) {
+                AdControllerInt.show().then((result) => {
+                    console.log("Intersticial Adsgram int-45201 completado.");
+                }).catch((error) => {
+                    console.warn("Intersticial cerrado o no disponible.", error);
+                });
+            } else if (window.Adsgram) {
+                window.Adsgram.init({ blockId: "int-45293" }).show().catch(e => console.warn(e));
+            }
+        }
+
+        // BANCO DE TRIVIAS MULTIDISCIPLINARIAS EN 3 CATEGORÍAS CLÍNICAS
+        const bancoTriviasMiniApp = {
+            rx: [
+                {
+                    cat_name: "CATEGORÍA: RAYOS X CONVENCIONAL & DIGITAL",
+                    q: "En un paciente con fractura de fémur inmovilizado con un YESO HÚMEDO (fresco), ¿cuál es el ajuste de Kilovoltaje (kVp) o mAs requerido para evitar la subexposición?",
+                    opts: [
+                        "A. Incrementar de +10 a +12 kVp (o duplicar +100% mAs) debido a la densidad de la humedad.",
+                        "B. Reducir el kVp un -15% para evitar sobreexponer el hueso.",
+                        "C. Mantener la técnica estándar sin cambios.",
+                        "D. Disminuir el mAs a la mitad sin modificar el kVp."
+                    ],
+                    correct: 0,
+                    expl: "El agua presente en el yeso húmedo absorbe mayor proporción de fotones primarios por efecto fotoeléctrico. Por tanto, se requiere incrementar de +10 a +12 kVp (o duplicar el mAs +100%). Una vez seco, el incremento se reduce a +5 o +7 kVp.",
+                    source: "Fuente: Bontrager's Textbook of Radiographic Positioning 7ma Ed. Cap. 1 / Bushong Cap. 16"
+                },
+                {
+                    cat_name: "CATEGORÍA: RAYOS X CONVENCIONAL & DIGITAL",
+                    q: "En una radiografía de columna cervical lateral, ¿por qué se utiliza una Distancia Foco-Receptor (DFI) ampliada a 180 cm en lugar de los 100 cm estándar?",
+                    opts: [
+                        "A. Para compensar la distancia objeto-receptor de los hombros y reducir la magnificación.",
+                        "B. Para aumentar el penacho de dispersión secundario.",
+                        "C. Para reducir la penetrabilidad en tejidos blandos.",
+                        "D. Para duplicar el mAs sin modificar el tiempo de disparo."
+                    ],
+                    correct: 0,
+                    expl: "La distancia desde la columna cervical hasta la placa es mayor debido al ancho de los hombros. Al aumentar la DFI a 180 cm se reduce la magnificación de los cuerpos vertebrales y se incrementa la nitidez del contorno óseo.",
+                    source: "Fuente: Bontrager Cap. 8 / Merrill Atlas of Radiographic Positioning"
+                }
+            ],
+            us: [
+                {
+                    cat_name: "CATEGORÍA: ULTRASONIDO / ECOGRAFÍA CLÍNICA",
+                    q: "En ecografía abdominal, ¿qué artefacto acústico se produce distal a una estructura anecoica líquida como la vesícula biliar o un quiste simple?",
+                    opts: [
+                        "A. Refuerzo Acústico Posterior (Aumento de eco posterior).",
+                        "B. Sombra Acústica Posterior con cono de sombra.",
+                        "C. Artefacto en Espejo por reflexión diafragmática.",
+                        "D. Artefacto de Anillo o Ring-down por gas."
+                    ],
+                    correct: 0,
+                    expl: "El sonido atraviesa los fluidos sin atenuación apreciable. Al llegar a los tejidos profundos detrás de la estructura líquida, los ecos retornan con mayor amplitud, generando una zona brillante denominada Refuerzo Acústico Posterior.",
+                    source: "Fuente: Rumack's Diagnostic Ultrasound 5ta Ed. Cap. 1 / Física de Ecografía Médica"
+                },
+                {
+                    cat_name: "CATEGORÍA: ULTRASONIDO / ECOGRAFÍA CLÍNICA",
+                    q: "Al evaluar el flujo en arterias renales con Doppler Color, ¿qué cambio ocurre al aumentar la Frecuencia de Repetición de Pulsos (PRF)?",
+                    opts: [
+                        "A. Elimina el artefacto de aliasing (solapamiento) en altas velocidades.",
+                        "B. Aumenta la sensibilidad para flujos extremadamente lentos.",
+                        "C. Duplica la penetración del haz ultrasónico.",
+                        "D. Disminuye la resolución axial del transductor."
+                    ],
+                    correct: 0,
+                    expl: "Aumentar la PRF eleva la escala de velocidades Doppler detectables sin ambigüedad (Límite de Nyquist = PRF/2), eliminando el aliasing o cambio inverso de color en flujos de alta velocidad.",
+                    source: "Fuente: Doppler Ultrasound in Diagnosis / Rumack Cap. 2"
+                }
+            ],
+            tc: [
+                {
+                    cat_name: "CATEGORÍA: TOMOGRAFÍA COMPUTARIZADA (TC / TAC)",
+                    q: "En Tomografía Computarizada multicorte, ¿cuál es el valor aproximado en Unidades Hounsfield (HU) de la sangre fresca extravasada en un hematoma agudo?",
+                    opts: [
+                        "A. Entre +50 HU y +80 HU.",
+                        "B. Entre -100 HU y -50 HU.",
+                        "C. Exactamente 0 HU (igual al agua pura).",
+                        "D. Mayor a +1000 HU (igual al hueso cortical)."
+                    ],
+                    correct: 0,
+                    expl: "La hemoglobina concentrada en la sangre recién coagulada eleva la atenuación de los rayos X, mostrando hiperdensidad en ventana de encéfalo con valores entre +50 HU y +80 HU, diferenciándolo del LCR (0 a +15 HU) y del edema (-20 HU a +20 HU).",
+                    source: "Fuente: Hounsfield Scale Official Reference / Computed Tomography for Technologists (Seeram)"
+                },
+                {
+                    cat_name: "CATEGORÍA: TOMOGRAFÍA COMPUTARIZADA (TC / TAC)",
+                    q: "¿Qué efecto tiene sobre la dosis y el ruido de imagen el incremento del 'Pitch' en un escáner helicoidal de TC?",
+                    opts: [
+                        "A. Reduce la dosis al paciente y aumenta ligeramente el ruido de imagen.",
+                        "B. Duplica la dosis de radiación al prolongar la exposición.",
+                        "C. Aumenta la resolución espacial a lo largo del eje Z.",
+                        "D. No produce ningún cambio en el tiempo de adquisición."
+                    ],
+                    correct: 0,
+                    expl: "Un Pitch mayor a 1 (desplazamiento de camilla mayor al grosor de colimación por rotación) cubre la anatomía más rápido, disminuyendo la dosis total administrada al paciente a costa de un leve incremento en el ruido estático de reconstrucción.",
+                    source: "Fuente: AAPM Protocols for CT Radiation Doses / Bushong Cap. 27"
+                }
+            ]
+        };
+
+        let currentCat = 'rx';
+        let currentQuizIndex = 0;
+
+        function switchTriviaCategory(catKey) {
+            currentCat = catKey;
+            currentQuizIndex = 0;
+            document.querySelectorAll('#tab-trivia .region-pill').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-cat-' + catKey).classList.add('active');
+
+            const item = bancoTriviasMiniApp[catKey][currentQuizIndex];
+            document.getElementById('quiz-cat-tag').innerText = item.cat_name;
+            document.getElementById('quiz-q').innerText = item.q;
+
+            const optsBox = document.getElementById('quiz-opts');
+            optsBox.innerHTML = '';
+            item.opts.forEach((opText, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-opt';
+                btn.innerText = opText;
+                btn.onclick = function() { selectQuizOpt(btn, idx); };
+                optsBox.appendChild(btn);
+            });
+
+            document.getElementById('reward-unlock-box').style.display = 'none';
+            document.getElementById('quiz-result-expl').style.display = 'none';
+            selectedQuizOption = null;
+        }
+
+        function selectQuizOpt(btn, optionIdx) {
+            document.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedQuizOption = optionIdx;
+
+            // 1. REVELAR RESPUESTA BÁSICA DE INMEDIATO (SIN OBLIGAR ANUNCIO - REGLA 3 Y 4 ADSGRAM)
+            const item = bancoTriviasMiniApp[currentCat][currentQuizIndex];
+            const resultBox = document.getElementById('quiz-result-expl');
+            const resultText = document.getElementById('quiz-result-text');
+            const resultSource = document.getElementById('quiz-result-source');
+            const opts = document.querySelectorAll('.quiz-opt');
+
+            opts.forEach((b, idx) => {
+                b.disabled = true;
+                if (idx === item.correct) b.classList.add('correct');
+                else if (idx === selectedQuizOption && selectedQuizOption !== item.correct) b.classList.add('wrong');
+            });
+
+            if (selectedQuizOption === item.correct) {
+                resultText.innerHTML = "<strong>✅ ¡RESPUESTA CORRECTA!</strong><br>" + item.expl;
+            } else {
+                resultText.innerHTML = "<strong>❌ RESPUESTA INCORRECTA (La correcta era la " + item.opts[item.correct].substring(0, 1) + ").</strong><br>" + item.expl;
+            }
+
+            if (resultSource) resultSource.innerText = item.source;
+            resultBox.style.display = 'block';
+
+            // 2. OFRECER RECOMPENSA VOLUNTARIA OPCONAL DE PUNTOS XP (REGLA 6 ADSGRAM)
+            document.getElementById('reward-unlock-box').style.display = 'block';
+        }
+
+        function desbloquearRespuestaConAnuncio() {
+            if (AdControllerReward) {
+                AdControllerReward.show().then((result) => {
+                    otorgarBonoRecompensa();
+                }).catch((error) => {
+                    otorgarBonoRecompensa();
+                });
+            } else if (window.Adsgram) {
+                window.Adsgram.init({ blockId: "45295" }).show().then(() => {
+                    otorgarBonoRecompensa();
+                }).catch((e) => {
+                    otorgarBonoRecompensa();
+                });
+            } else {
+                otorgarBonoRecompensa();
+            }
+        }
+
+        function otorgarBonoRecompensa() {
+            document.getElementById('reward-unlock-box').style.display = 'none';
+            alert("🌟 ¡BONO OTORGADO! Has ganado +50 Puntos Radiológicos de Experiencia (XP) por apoyar la plataforma.");
+        });
+
+            if (selectedQuizOption === item.correct) {
+                resultText.innerHTML = "<strong>¡CORRECTO!</strong><br>" + item.expl;
+            } else {
+                resultText.innerHTML = "<strong>RESPUESTA INCORRECTA (La correcta era la " + item.opts[item.correct].substring(0, 1) + ").</strong><br>" + item.expl;
+            }
+
+            if (resultSource) resultSource.innerText = item.source;
+            resultBox.style.display = 'block';
+        }
+
+        const baseProyecciones = [
+            {
+                region: "craneo",
+                nombre: "💀 AP Axial de Cráneo (Método de Towne)",
+                espesor_ref: 19,
+                kvp_base: 75,
+                mas_base: 20.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Bucky 8:1 / 12:1",
+                rayo_central: "30° Caudal a la LOM (37° a la LIOM), 6.5 cm sobre glabela.",
+                linea_ref: "LOM (Línea Orbitomeatal)",
+                posicion: "Decúbito supino. Mentón deprimido.",
+                fuente: "Bontrager 7ma Ed. Cap. 11 / Merrill Cap. 20"
+            },
+            {
+                region: "craneo",
+                nombre: "💀 Submentovértice de Cráneo (SMV / Hirtz)",
+                espesor_ref: 20,
+                kvp_base: 80,
+                mas_base: 25.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Bucky 8:1 / 12:1",
+                rayo_central: "Perpendicular a LIOM entre arcos cigomáticos 2 cm anterior a MAE.",
+                linea_ref: "LIOM (Línea Infraorbitomeatal)",
+                posicion: "Cabeza hiperextendida.",
+                fuente: "Bontrager 7ma Ed. Cap. 11"
+            },
+            {
+                region: "cuello",
+                nombre: "🗣️ Lateral de Cuello (Partes Blandas)",
+                espesor_ref: 11,
+                kvp_base: 65,
+                mas_base: 6.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Sin Rejilla / Opcional 8:1",
+                rayo_central: "Perpendicular a nivel de C4 (cartílago tiroides).",
+                linea_ref: "Plano Medio Sagital paralelo al RI",
+                posicion: "Bipedestación, mentón elevado.",
+                fuente: "Merrill Atlas Cap. 8 / Bontrager Cap. 3"
+            },
+            {
+                region: "cervical",
+                nombre: "🦴 AP Transoral de C1-C2 (Odontoides)",
+                espesor_ref: 13,
+                kvp_base: 70,
+                mas_base: 12.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Rejilla Bucky 8:1",
+                rayo_central: "Perpendicular al centro de la boca abierta.",
+                linea_ref: "Borde inferior incisivos superiores a mastoides",
+                posicion: "Boca abierta al máximo fonando 'Ah'.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "cervical",
+                nombre: "🦴 Lateral de Columna Cervical",
+                espesor_ref: 12,
+                kvp_base: 70,
+                mas_base: 16.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Rejilla Bucky 8:1",
+                rayo_central: "Perpendicular a nivel de C4 (cartílago tiroides). DFI 180 cm.",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Sentado o bipedestación lateral.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "dorsal",
+                nombre: "🦴 AP de Columna Dorsal (Torácica)",
+                espesor_ref: 18,
+                kvp_base: 75,
+                mas_base: 20.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 8:1 / 12:1",
+                rayo_central: "Perpendicular a T7 (8 cm inferior a escotadura yugular).",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Decúbito supino. Rodillas flexionadas.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "lumbar",
+                nombre: "🦴 AP de Columna Lumbar",
+                espesor_ref: 20,
+                kvp_base: 75,
+                mas_base: 25.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular a nivel de crestas ilíacas (L4-L5).",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Decúbito supino.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "lumbar",
+                nombre: "🦴 Lateral de Sacro y Coxis",
+                espesor_ref: 24,
+                kvp_base: 85,
+                mas_base: 32.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular 8 cm posterior a EIAS al nivel del coxis.",
+                linea_ref: "Plano Mediocoronal",
+                posicion: "Decúbito lateral estricto.",
+                fuente: "Bontrager 7ma Ed. Cap. 8"
+            },
+            {
+                region: "torax",
+                nombre: "🫁 PA de Tórax (Tele de Tórax)",
+                espesor_ref: 21,
+                kvp_base: 115,
+                mas_base: 4.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular a T7 (DFI 180 cm) en inspiración profunda.",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Bipedestación PA.",
+                fuente: "Bontrager 7ma Ed. Cap. 3"
+            },
+            {
+                region: "abdomen",
+                nombre: "🫃 AP de Abdomen en Decúbito (KUB)",
+                espesor_ref: 22,
+                kvp_base: 75,
+                mas_base: 25.0,
+                foco: "Foco Grueso (1.2 mm)",
+                rejilla: "Rejilla Bucky 12:1",
+                rayo_central: "Perpendicular a nivel de crestas ilíacas (L4).",
+                linea_ref: "Plano Medio Sagital",
+                posicion: "Decúbito supino.",
+                fuente: "Bontrager 7ma Ed. Cap. 3"
+            },
+            {
+                region: "miembros",
+                nombre: "🦴 AP de Rodilla",
+                espesor_ref: 11,
+                kvp_base: 65,
+                mas_base: 6.0,
+                foco: "Foco Fino (0.6 mm)",
+                rejilla: "Sin Rejilla / Opcional 8:1",
+                rayo_central: "5° Cefálico a 0°, 1.5 cm inferior al ápice de la rótula.",
+                linea_ref: "Centro articulación rodilla",
+                posicion: "Decúbito supino.",
+                fuente: "Bontrager 7ma Ed. Cap. 6"
+            }
+        ];
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+        }
+
+        function renderProyecciones(filterRegionName = "todas") {
+            const container = document.getElementById('proyecciones-list');
+            container.innerHTML = '';
+
+            const list = filterRegionName === 'todas' 
+                ? baseProyecciones 
+                : baseProyecciones.filter(p => p.region === filterRegionName);
+
+            list.forEach((p, idx) => {
+                const card = document.createElement('div');
+                card.className = 'struct-card';
+                card.innerHTML = `
+                    <div class="struct-header">
+                        <span>${p.nombre}</span>
+                        <span class="struct-tag">${p.region.toUpperCase()}</span>
+                    </div>
+
+                    <div class="factores-grid">
+                        <div class="factor-item">kVp Base: <span id="kvp-val-${idx}" class="factor-val">${p.kvp_base}</span></div>
+                        <div class="factor-item">mAs Base: <span id="mas-val-${idx}" class="factor-val">${p.mas_base.toFixed(2)}</span></div>
+                        <div class="factor-item">Foco: <span style="color:#fff;">${p.foco}</span></div>
+                        <div class="factor-item">Rejilla: <span style="color:#fff;">${p.rejilla}</span></div>
+                    </div>
+
+                    <div class="info-row">📍 <strong>Rayo Central:</strong> ${p.rayo_central}</div>
+                    <div class="info-row">📐 <strong>Línea de Ref:</strong> ${p.linea_ref}</div>
+                    <div class="info-row">🧘 <strong>Posicionamiento:</strong> ${p.posicion}</div>
+
+                    <div class="calc-adjust-box">
+                        <div class="control-label">
+                            <span>Ajustar Espesor Paciente (cm):</span>
+                            <span id="cm-badge-${idx}" class="val-badge">${p.espesor_ref} cm</span>
+                        </div>
+                        <input type="range" min="1" max="50" value="${p.espesor_ref}" oninput="adjustStructCalc(${idx}, this.value, ${p.kvp_base}, ${p.mas_base}, ${p.espesor_ref})">
+                    </div>
+
+                    <div style="font-size: 9px; color: var(--accent-cyan); margin-top: 6px; text-align: right;">Fuente: ${p.fuente}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function adjustStructCalc(idx, newCm, baseKvp, baseMas, refCm) {
+            document.getElementById(`cm-badge-${idx}`).innerText = newCm + ' cm';
+            const diffCm = newCm - refCm;
+            let calcKvp = Math.round(baseKvp + (diffCm * 2));
+            let calcMas = baseMas;
+
+            calcKvp = Math.round(calcKvp * 1.15);
+            calcMas = calcMas / 2.0;
+
+            document.getElementById(`kvp-val-${idx}`).innerText = calcKvp;
+            document.getElementById(`mas-val-${idx}`).innerText = calcMas.toFixed(2);
+
+            consultaCounter++;
+            if (consultaCounter % 2 === 0) {
+                mostrarAnuncioAdsgram();
+            }
+        }
+
+        function filterRegion(evt, regionName) {
+            document.querySelectorAll('.region-pill').forEach(b => b.classList.remove('active'));
+            evt.target.classList.add('active');
+            renderProyecciones(regionName);
+        }
+
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.container > div[id^="tab-"]').forEach(d => d.style.display = 'none');
+            
+            evt.target.classList.add('active');
+            document.getElementById('tab-' + tabId).style.display = 'block';
+        }
+
+        function updateGenCalc() {
+            const thickness = parseInt(document.getElementById('gen-thickness-slider').value);
+            const isAlara = document.getElementById('gen-alara-toggle').checked;
+            document.getElementById('gen-thickness-val').innerText = thickness + ' cm';
+
+            let baseKvp = (2 * thickness) + 30;
+            let baseMas = thickness <= 10 ? 4.0 : (thickness <= 20 ? 20.0 : 32.0);
+
+            if (isAlara) {
+                baseKvp = Math.round(baseKvp * 1.15);
+                baseMas = baseMas / 2.0;
+                document.getElementById('gen-alara-badge').style.display = 'block';
+            } else {
+                document.getElementById('gen-alara-badge').style.display = 'none';
+            }
+
+            document.getElementById('gen-res-kvp').innerText = baseKvp;
+            document.getElementById('gen-res-mas').innerText = baseMas.toFixed(2);
+
+            consultaCounter++;
+            if (consultaCounter % 2 === 0) {
+                mostrarAnuncioAdsgram();
+            }
+        }
+
+        
+        
+        
+        // INTEGRACIÓN OFICIAL Y ESTRICTA DE PAGO CON TELEGRAM STARS (25 ESTRELLAS = 25 XTR)
+        const RENDER_BACKEND_URL = 'https://xraytec.onrender.com/api/generar-factura';
+
+        function comprarCompendioStars() {
+            const btn = document.getElementById('btn-buy-pdf-stars');
+            const originalText = "⭐ OBTENER COMPENDIO EN PDF (25 ESTRELLAS)";
+            btn.innerText = "⏳ GENERANDO FACTURA TELEGRAM STARS...";
+            btn.disabled = true;
+
+            fetch(RENDER_BACKEND_URL)
+                .then(res => {
+                    if (!res.ok) throw new Error("Error en servidor backend de facturación");
+                    return res.json();
+                })
+                .then(data => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+
+                    if (data.invoiceLink && window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openInvoice) {
+                        Telegram.WebApp.openInvoice(data.invoiceLink, (status) => {
+                            if (status === 'paid') {
+                                document.getElementById('pdf-unlocked-success').style.display = 'block';
+                                window.open('./Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+                            } else {
+                                alert("⚠️ Pago no completado. La transacción fue cancelada o no se acreditaron las 25 Estrellas.");
+                            }
+                        });
+                    } else if (data.invoiceLink) {
+                        window.open(data.invoiceLink, '_blank');
+                    } else {
+                        alert("⚠️ No se pudo generar la factura de Telegram Stars. Por favor intenta nuevamente.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error al conectar pasarela de pago:", err);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    alert("⚠️ No fue posible conectar con la pasarela de Telegram Stars. Asegúrate de tener conexión a internet y abrir desde Telegram.");
+                });
+        }
+
+        function abrirPdfSinError() {
+            window.open('./Compendio_Radiologico_XrayTec_PRO.pdf', '_blank');
+        }
+
+        renderProyecciones('todas');
+    </script>
+</body>
+</html>
