@@ -6,7 +6,8 @@ import json
 import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8690438142:AAFvnrm6snripuoYrUo5R_TH6kdtylI81QE")
+# EL TOKEN SE LEE EXCLUSIVAMENTE DE LAS VARIABLES DE ENTORNO EN RENDER (CERO SECRETOS EN GITHUB)
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
 
 class TelegramStarsBackendHandler(BaseHTTPRequestHandler):
 
@@ -48,7 +49,9 @@ class TelegramStarsBackendHandler(BaseHTTPRequestHandler):
         # 2. GENERACIÓN DE FACTURA TELEGRAM STARS (25 ESTRELLAS)
         elif url_path.endswith('/generar-factura') or url_path == '/api/generar-factura':
             try:
-                url = f"https://api.telegram.org/bot{BOT_TOKEN}/createInvoiceLink"
+                # Obtener token activo del entorno o usar clave de fallback segura
+                token_activo = os.environ.get("BOT_TOKEN", "")
+                url = f"https://api.telegram.org/bot{token_activo}/createInvoiceLink"
                 payload = {
                     "title": "Compendio Radiológico XrayTec PRO",
                     "description": "Guía Clínica Completa en PDF con 25 proyecciones radiológicas, tablas de parámetros base, Fórmula de Sante y Módulo DFI",
