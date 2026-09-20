@@ -8,3 +8,4 @@ google.com, pub-8507296424570065, DIRECT, f08c47fec0942fa0
 
 # Entrada Oficial de AppLovin MAX (RESELLER / Bidding)
 applovin.com, pub-8507296424570065, RESELLER, 9b9ef92955f24202
+181b7c8f-2d51-4e44-9253-e7f5c3c61565
