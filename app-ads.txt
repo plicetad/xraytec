@@ -9,3 +9,9 @@ google.com, pub-8507296424570065, DIRECT, f08c47fec0942fa0
 # Entrada Oficial de AppLovin MAX (RESELLER / Bidding)
 applovin.com, pub-8507296424570065, RESELLER, 9b9ef92955f24202
 181b7c8f-2d51-4e44-9253-e7f5c3c61565
+pubmatic.com, 165874, RESELLER, 5d62403b186f2ace
+my-cast.tv, 987033, RESELLER, 8c33fe1bd714ffd7
+triplelift.com, 8614, RESELLER, 6c33edb13117fd86
+adwmg.com, 159512, RESELLER, c9688a22012618e7
+bold-win.com, 1013, RESELLER, 71746737d0bab951
+appnexus.com, 17973, RESELLER, f5ab79cb980f11d1
